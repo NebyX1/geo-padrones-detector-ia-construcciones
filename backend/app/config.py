@@ -10,6 +10,9 @@ def settings(name):
     load_dotenv(project_root / ".env", override=False)
     testing = name == "testing"
     production = name == "production"
+    bypass = os.getenv("DEV_AUTH_BYPASS", "false").lower() == "true"
+    if production and bypass:
+        raise RuntimeError("DEV_AUTH_BYPASS está prohibido en producción.")
     secret = os.getenv("SECRET_KEY", "")
     if not secret and not testing:
         raise RuntimeError("Configure SECRET_KEY con un valor aleatorio privado de al menos 32 caracteres.")
@@ -33,6 +36,8 @@ def settings(name):
         TESTING=testing,
         DEBUG=False,
         PRODUCTION=production,
+        DEVELOPMENT=name == "development",
+        DEV_AUTH_BYPASS=bypass and name == "development",
         SECRET_KEY=secret or "unit-tests-only-never-deploy",
         WTF_CSRF_SECRET_KEY=os.getenv("WTF_CSRF_SECRET_KEY") or secret or "unit-tests-csrf-only",
         SESSION_COOKIE_NAME="geopadrones_session",

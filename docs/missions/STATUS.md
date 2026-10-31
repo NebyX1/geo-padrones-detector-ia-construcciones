@@ -8,7 +8,7 @@ Estado global: FUNCIONAL Y VERIFICADA EN LOCAL; aceptación del build de producc
 | --- | --- | --- |
 | 0 | VERIFICADA | Referencias clonadas y SHA fijados; arquitectura, dependencias, licencias, contratos y decisiones documentados en ARQUITECTURA_SAMPLE.md y decisions/. No se leyó sample/backend/.env. |
 | 1 | VERIFICADA LOCAL | React, Flask, PostGIS, Redis, MinIO, SMTP de pruebas, migraciones, init, worker y dispatcher construidos; Compose con volúmenes y healthchecks. |
-| 2 | VERIFICADA LOCAL | Sesión, Argon2, CSRF, 2FA SMTP, recuperación, revocación, roles, usuarios, último superadmin y auditoría; pruebas de servidor y login de navegador. Administrador inicial por CLI interactiva. |
+| 2 | VERIFICADA LOCAL | Sesión, Argon2, CSRF, captcha numérico, 2FA SMTP, recuperación, revocación, roles, usuarios, último superadmin y auditoría; pruebas de servidor y login de navegador. Administrador inicial por CLI interactiva. |
 | 3 | VERIFICADA | WFS paginado real: 25.994 geometrías, 25.953 identidades, 18 localidades, 41 piezas adicionales y 2 reparaciones; 117 geometrías de categorías de suelo. GiST, bbox, MVT, versiones e importación idempotente. |
 | 4 | VERIFICADA EN MINAS | WCS real EPSG:5382, captura 2025-12, 5 cm nativos y trabajo a 20 cm, caché privada, WMS alineado. WMS histórico urbano 2017–2018 comprobado, capa de comparación visual; inferencia histórica no habilitada. |
 | 5 | VERIFICADA | Checkpoint oficial fijado por revisión/hash, carga estricta de 19 logits, normalización oficial, ventanas con solape, máscara, vectorización y RQ CPU. Benchmark verdadero de Minas. |
@@ -46,3 +46,9 @@ Fixtures sintéticos solo en tests y declaraciones de QA, identificados como tal
 Informe consolidado con cantidades, tiempos, auditorías, restauración y salud: [VERIFIED_RUN.json](../validation/VERIFIED_RUN.json). Aplicación principal activa en http://127.0.0.1:8787; el primer administrador se crea por CLI interactiva. Se eliminaron todas las cuentas/bases/buckets/colas/workers de QA y se cerraron los previews auxiliares. PostgreSQL/MinIO/Redis y la aplicación principal permanecen disponibles con sus datos oficiales. Capturas verificadas en ../screenshots/.
 
 Se corrigió además la espera de WMS para no retener conexiones de base ni bloquear consultas de parcelas durante la carga de teselas; caché por cobertura oficial estable, timeouts acotados y validación de coordenadas. La probabilidad media se calcula exclusivamente sobre detecciones válidas dentro de la parcela. El backup PostgreSQL final restaurado contiene la revisión f2a08bc931d7. No se publicó código ni se cambió infraestructura externa.
+
+## Cambio solicitado el 2026-10-31: captcha y entrada local temporal
+
+Se agregó al login la suma numérica del ejemplo de sample, validación de servidor, expiración y consumo de un solo uso. El login y el doble factor quedan preservados en la etiqueta Git local `auth-captcha-2fa-preserved` (`22bfbd9`). Por pedido expreso del usuario se añadió `DEV_AUTH_BYPASS`, con entrada directa solo en development/localhost, aviso visible, auditoría de identidad técnica y rechazo en producción. Desactivar la opción restaura login/captcha/2FA sin quitar código. Instrucciones en ../AUTH_MODES.md. Los informes de verificación anteriores describen la entrega inicial; la nueva ejecución se registra por separado.
+
+Verificación del cambio de acceso: 79 tests backend, 10 frontend y 2 pruebas Playwright aprobadas (flujo protegido completo más navegación de prueba sin credenciales). Antes de activar el modo local, /auth/me devolvió 401 y /auth/captcha 200; activado, /auth/me devuelve identidad técnica local. Se limpió la QA efímera. La instancia de pruebas solicitada permanece activa en 127.0.0.1:8787.

@@ -14,6 +14,10 @@ def register_commands(app):
     def create_admin(email, name):
         """Primer administrador. La contraseña se solicita oculta, nunca como argumento."""
         from email_validator import validate_email, EmailNotValidError
+        from ..auth_constants import LOCAL_PREVIEW_EMAIL
+
+        if email.strip().lower() == LOCAL_PREVIEW_EMAIL:
+            raise click.ClickException("Dirección reservada para el modo de prueba local.")
 
         try:
             email = validate_email(email, check_deliverability=False).normalized.lower()

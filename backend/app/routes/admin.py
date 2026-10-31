@@ -17,6 +17,7 @@ from ..models import (
 )
 from ..schemas import UserSchema, load
 from ..utils.security import require, audit
+from ..auth_constants import LOCAL_PREVIEW_USER_ID, LOCAL_PREVIEW_EMAIL
 
 bp = Blueprint("admin", __name__)
 
@@ -27,7 +28,12 @@ def users():
     return jsonify(
         items=[
             u.public()
-            for u in db.session.execute(select(User).order_by(User.created_at.desc()).limit(250)).scalars()
+            for u in db.session.execute(
+                select(User)
+                .where(User.id != LOCAL_PREVIEW_USER_ID)
+                .order_by(User.created_at.desc())
+                .limit(250)
+            ).scalars()
         ]
     )
 
@@ -36,6 +42,8 @@ def users():
 @require("users")
 def create_user():
     data = load(UserSchema(), request.get_json())
+    if data["email"].strip().lower() == LOCAL_PREVIEW_EMAIL:
+        abort(422, "Dirección reservada para la prueba local.")
     if current_user.role != "superadmin" and data["role"] in {"superadmin", "admin"}:
         abort(403, "Solo el superadministrador puede otorgar permisos administrativos.")
     user = User(
@@ -52,6 +60,8 @@ def create_user():
 @bp.patch("/users/<identifier>")
 @require("users")
 def edit_user(identifier):
+    if identifier == LOCAL_PREVIEW_USER_ID:
+        abort(409, "La identidad técnica local no se modifica desde Administración.")
     data = load(UserSchema(partial=True), request.get_json())
     # Serialize role changes so the last active superadmin cannot be removed concurrently.
     db.session.execute(text("SELECT pg_advisory_xact_lock(805383)"))
@@ -68,7 +78,9 @@ def edit_user(identifier):
         data.get("role", user.role) != "superadmin" or data.get("is_active") is False
     ):
         count = db.session.execute(
-            select(func.count()).select_from(User).where(User.role == "superadmin", User.is_active.is_(True))
+            select(func.count())
+            .select_from(User)
+            .where(User.role == "superadmin", User.is_active.is_(True), User.id != LOCAL_PREVIEW_USER_ID)
         ).scalar()
         if count <= 1:
             abort(409, "Debe existir al menos un superadministrador activo.")
@@ -85,6 +97,8 @@ def edit_user(identifier):
 @bp.post("/users/<identifier>/reset-access")
 @require("users")
 def reset_access(identifier):
+    if identifier == LOCAL_PREVIEW_USER_ID:
+        abort(409, "La identidad técnica local no admite recuperación de contraseña.")
     from .auth import issue_challenge
 
     user = db.get_or_404(User, identifier)

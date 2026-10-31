@@ -23,6 +23,8 @@ def create_app(config_name=None, overrides=None):
     app = Flask(__name__)
     app.config.update(settings(config_name or os.getenv("FLASK_CONFIG", "development")))
     app.config.update(overrides or {})
+    if app.config["DEV_AUTH_BYPASS"] and (app.config["PRODUCTION"] or not app.config["DEVELOPMENT"]):
+        raise RuntimeError("El acceso sin autenticación solo está permitido en desarrollo local.")
     if app.config["TRUST_PROXY"]:
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
     logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"), format="%(message)s")
@@ -66,9 +68,19 @@ def create_app(config_name=None, overrides=None):
     @login_manager.user_loader
     def load_user(user_id):
         from .models import User
+        from .auth_constants import LOCAL_PREVIEW_USER_ID
+
+        if user_id == LOCAL_PREVIEW_USER_ID:
+            return None
 
         user = db.session.get(User, user_id)
         return user if user and user.is_active else None
+
+    @login_manager.request_loader
+    def local_preview_user(incoming_request):
+        from .services.local_preview import load_local_preview
+
+        return load_local_preview(incoming_request)
 
     @app.errorhandler(HTTPException)
     def http_error(exc):

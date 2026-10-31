@@ -10,6 +10,7 @@ from sqlalchemy import select, update
 from ..extensions import db, limiter, mail
 from ..models import User, AuthChallenge, utcnow, uid, ph
 from ..schemas import LoginSchema, load
+from ..auth_constants import LOCAL_PREVIEW_USER_ID
 from ..utils.security import require, audit
 
 bp = Blueprint("auth", __name__)
@@ -104,7 +105,7 @@ def login():
     user = db.session.execute(
         select(User).where(User.email == data["email"].strip().lower())
     ).scalar_one_or_none()
-    valid = user.check_password(data["password"]) if user else False
+    valid = user.check_password(data["password"]) if user and user.id != LOCAL_PREVIEW_USER_ID else False
     if not user:
         try:
             ph.verify(DUMMY_HASH, data["password"])
@@ -169,7 +170,7 @@ def logout():
 def forgot():
     email = str((request.get_json() or {}).get("email", "")).strip().lower()
     user = db.session.execute(
-        select(User).where(User.email == email, User.is_active.is_(True))
+        select(User).where(User.email == email, User.is_active.is_(True), User.id != LOCAL_PREVIEW_USER_ID)
     ).scalar_one_or_none()
     # Return an opaque random identifier in both cases; no account enumeration.
     identifier = uid()

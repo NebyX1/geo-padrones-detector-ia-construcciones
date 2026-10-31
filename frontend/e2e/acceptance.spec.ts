@@ -13,6 +13,7 @@ test('recorrido real: 2FA, parcela, worker FLAIR, CSV, comparación, revisión y
   await page.getByLabel('Resultado del captcha').fill(String(operands[0]+operands[1]))
   await page.getByRole('button',{name:'Ingresar a la plataforma'}).click()
   await expect(page.getByLabel('Código de verificación')).toBeVisible()
+  await page.screenshot({path:'../artifacts/screenshots/two-factor.png',fullPage:true})
   const messages=await request.get('http://127.0.0.1:8125/api/v1/messages')
   const inbox=await messages.json()
   const entry=inbox.messages.find((m:{To:{Address:string}[]})=>m.To.some(t=>t.Address==='browser-test@example.org'))

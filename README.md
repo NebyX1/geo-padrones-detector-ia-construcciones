@@ -2,6 +2,10 @@
 
 Plataforma municipal de exploración catastral, segmentación de construcciones visibles, cálculo de huellas en m², comparación de declaraciones y revisión humana. Implementación real con React/Vite y Flask, PostgreSQL/PostGIS, RQ/Redis y MinIO. **El flujo principal fue probado de extremo a extremo con ortofoto, parcelas e inferencia reales. No se certifica todavía precisión local ni habilitación para producción institucional.**
 
+## Acceso temporal para pruebas locales
+
+Por pedido del usuario, la instancia local puede entrar directamente sin autenticación. Login, captcha numérico y doble factor están preservados en el código y en el checkpoint `auth-captcha-2fa-preserved`. El login sigue disponible en `/login`. Activar/desactivar mediante `scripts/set_local_preview.py on|off --restart`; solo development/localhost, bloqueado en producción. Ver [modos de acceso](docs/AUTH_MODES.md).
+
 ## Ejecutar
 
 Requiere Docker/Compose v2, Python 3.11 y recursos disponibles (orientación inicial: 4 CPU, 8 GB RAM y 15 GB de disco). Desde la raíz:
@@ -79,7 +83,7 @@ Los tests backend crean y eliminan una base PostGIS aleatoria aislada. Incluyen 
 
 End-to-end: `scripts/qa_server.py` crea una base, bucket, cola y cuenta de fixture temporales, carga una muestra oficial y levanta un worker Docker. Iniciar Vite en frontend (`$env:VITE_PROXY_TARGET="http://127.0.0.1:5051"; npm run dev`, proxy exclusivo de QA) y ejecutar `npm run test:e2e` con Edge/Chromium. Detener el servidor al finalizar; si una interrupción del sistema impide su finally, `scripts/qa_cleanup.py NOMBRE_EXACTO_BASE_QA` limpia únicamente recursos con formato y manifiesto de propiedad verificados. No usar fixtures como evidencia administrativa.
 
-La suite actual contiene 71 pruebas backend, 9 frontend y un recorrido de aceptación Playwright. La comprobación de dependencias no detectó vulnerabilidades conocidas; no sustituye el mantenimiento continuo.
+La suite actual contiene 79 pruebas backend, 10 frontend y dos pruebas de aceptación Playwright. La comprobación de dependencias no detectó vulnerabilidades conocidas; no sustituye el mantenimiento continuo.
 
 Reportes, máscaras, GeoJSON, benchmark y capturas se guardan en artifacts/, excluido de Git. [Verificación ejecutada](docs/validation/VERIFIED_RUN.json), [informe del modelo](docs/validation/MODEL_REPORT.md), [estado por misión](docs/missions/STATUS.md), [plan](docs/missions/PLAN.md), [OpenAPI](docs/api/openapi.json).
 

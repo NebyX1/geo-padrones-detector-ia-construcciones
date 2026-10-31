@@ -1,27 +1,27 @@
 {
-  "checked_at": "2026-10-31T02:50:44.539206+00:00",
+  "checked_at": "2026-10-31T03:14:46.681178+00:00",
   "scope": "Local software verification; no production deployment or local accuracy certification",
   "tests": {
     "backend": {
-      "tests": 71,
+      "tests": 79,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 15.688
+      "seconds": 20.344
     },
     "frontend": {
-      "tests": 9,
+      "tests": 10,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 1.089
+      "seconds": 2.095
     },
     "e2e": {
-      "tests": 1,
+      "tests": 2,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 41.533
+      "seconds": 119.483
     }
   },
   "npm_audit": {
@@ -62,8 +62,8 @@
     "requests": 40,
     "concurrency": 8,
     "errors": 0,
-    "p50_ms": 74,
-    "p95_ms": 175
+    "p50_ms": 79,
+    "p95_ms": 136
   },
   "inference": {
     "real_inference": true,
@@ -112,12 +112,16 @@
     "notice": "Check valid imagery and semantic strata manually. No geometry or class labels were fabricated.",
     "sha256": "cfefa3cb8cca4ea290d64367070213c61221240e1c5ef98470fc5c74f172bb5b"
   },
-  "temporary_resource_cleanup": {
-    "databases_remaining": 0,
-    "buckets_remaining": 0,
-    "queues_remaining": 0,
-    "qa_worker_containers_remaining": 0,
-    "auxiliary_previews_closed": true,
-    "persistent_qa_account_created": false
+  "auth_update": {
+    "checked_at": "2026-10-31T03:16:05.461195+00:00",
+    "protected_checkpoint": "auth-captcha-2fa-preserved",
+    "protected_commit": "22bfbd9",
+    "numeric_captcha": "sample/admin style; 1..10 + 1..10; server-validated; one-use; 10-minute expiry",
+    "local_preview_enabled": true,
+    "default_preview_flag": false,
+    "production_refuses_preview": true,
+    "tested_protected_api_status_before_preview": 401,
+    "tested_preview_api_status": 200,
+    "qa_resources_removed": true
   }
 }

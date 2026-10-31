@@ -105,12 +105,59 @@
                   "password": {
                     "type": "string",
                     "maxLength": 256
+                  },
+                  "captcha_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "captcha_answer": {
+                    "type": "string",
+                    "pattern": "^[0-9]{1,2}$"
                   }
                 }
               }
             }
           }
         }
+      }
+    },
+    "/api/v1/auth/captcha": {
+      "get": {
+        "operationId": "auth_captcha_get",
+        "summary": "auth · captcha",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": []
       }
     },
     "/api/v1/auth/2fa/verify": {

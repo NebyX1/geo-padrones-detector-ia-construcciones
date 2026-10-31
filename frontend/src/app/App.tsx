@@ -18,6 +18,6 @@ function Permission({capability,children}:{capability:string;children:ReactNode}
 export default function App() {
   const {user,loading}=useAuth()
   if(loading)return <div className="boot-screen"><Loading text="Conectando con GeoPadrones…"/></div>
-  if(!user)return <Login/>
+  if(!user||window.location.pathname==='/login')return <Login/>
   return <BrowserRouter><Shell><Suspense fallback={<Loading/>}><Routes><Route path="/" element={<Navigate to="/explorer" replace/>}/><Route path="/explorer" element={<Explorer/>}/><Route path="/account" element={<Account/>}/><Route path="/dashboard" element={<Dashboard/>}/><Route path="/analysis" element={<Permission capability="analyze"><Jobs/></Permission>}/><Route path="/history" element={<Jobs history/>}/><Route path="/imports" element={<Permission capability="import"><Imports/></Permission>}/><Route path="/comparisons" element={<Comparisons/>}/><Route path="/exports" element={<Permission capability="export"><Exports/></Permission>}/><Route path="/reviews" element={<Reviews/>}/><Route path="/admin" element={<Permission capability="users"><Admin/></Permission>}/><Route path="/settings" element={<Permission capability="settings"><Settings/></Permission>}/><Route path="*" element={<Navigate to="/explorer" replace/>}/></Routes></Suspense></Shell></BrowserRouter>
 }

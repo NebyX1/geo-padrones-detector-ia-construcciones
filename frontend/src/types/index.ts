@@ -1,6 +1,6 @@
 import type { Feature, MultiPolygon } from 'geojson'
 export type Role = 'superadmin' | 'admin' | 'analyst' | 'reviewer' | 'viewer'
-export type User = {id: string; email: string; name: string; role: Role; is_active: boolean}
+export type User = {id: string; email: string; name: string; role: Role; is_active: boolean; is_local_preview?:boolean}
 export type ParcelState = 'NO_ANALIZADO' | 'CON_CONSTRUCCION_VISIBLE' | 'SIN_CONSTRUCCION_VISIBLE' | 'INDETERMINADO' | 'ERROR_ANALISIS'
 export type Parcel = {id: string; coddepto: string; codloccat: string; padron: string; locality: string; state: ParcelState; comparison_state?: string;
   m2_parcela: number; m2_huella_detectada: number | null; occupancy: number | null; coverage: number | null;

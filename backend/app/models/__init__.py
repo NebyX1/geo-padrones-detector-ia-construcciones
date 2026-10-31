@@ -7,6 +7,7 @@ from argon2.exceptions import VerificationError, InvalidHashError
 from flask_login import UserMixin
 from geoalchemy2 import Geometry
 from ..extensions import db
+from ..auth_constants import LOCAL_PREVIEW_USER_ID
 
 ph = PasswordHasher()
 
@@ -55,6 +56,7 @@ class User(UserMixin, Base):
             role=self.role,
             is_active=self.is_active,
             last_login_at=self.last_login_at,
+            is_local_preview=self.id == LOCAL_PREVIEW_USER_ID,
         )
 
 

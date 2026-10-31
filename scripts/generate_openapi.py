@@ -27,6 +27,8 @@ payloads = {
     "/auth/login": {
         "email": {"type": "string", "format": "email"},
         "password": {"type": "string", "maxLength": 256},
+        "captcha_id": {"type": "string", "format": "uuid"},
+        "captcha_answer": {"type": "string", "pattern": "^[0-9]{1,2}$"},
     },
     "/auth/2fa/verify": {"code": {"type": "string", "pattern": "^[0-9]{6}$"}},
     "/auth/password/forgot": {"email": {"type": "string", "format": "email"}},
