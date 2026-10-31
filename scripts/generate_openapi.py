@@ -67,6 +67,28 @@ payloads = {
         "percent_tolerance": {"type": "number", "default": 20},
         "comparable_area": {"type": "boolean", "default": False},
     },
+    "/bulk-selections/preview": {
+        "bounds": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": {"type": "number"},
+            "description": "Oeste, sur, este y norte en WGS84; selección completa sin truncar por el mapa.",
+        },
+        "locality": {"type": "string"},
+        "q": {"type": "string", "maxLength": 80},
+        "scene_id": {"type": "string", "format": "uuid"},
+    },
+    "/bulk-selections": {
+        "bounds": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "number"}},
+        "name": {"type": "string", "minLength": 1, "maxLength": 120},
+        "locality": {"type": "string"},
+        "q": {"type": "string", "maxLength": 80},
+        "scene_id": {"type": "string", "format": "uuid"},
+        "model_version_id": {"type": "string", "format": "uuid"},
+        "probability": {"type": "number", "minimum": 0.1, "maximum": 0.99},
+        "min_area": {"type": "number", "minimum": 0},
+    },
     "/exports": {
         "format": {"enum": ["csv", "geojson"]},
         "filters": {
@@ -118,7 +140,7 @@ for rule in app.url_map.iter_rules():
             parameters += [
                 {"name": name, "in": "query", "schema": {"type": "string"}} for name in ["limit", "offset"]
             ]
-        if suffix in ["/parcels", "/parcels/search", "/dashboard"]:
+        if suffix in ["/parcels", "/parcels/search", "/dashboard", "/bulk-selections/{identifier}/results"]:
             parameters += [
                 {"name": name, "in": "query", "schema": {"type": "string"}}
                 for name in sorted(FILTER_KEYS | {"format"})
@@ -158,7 +180,7 @@ for rule in app.url_map.iter_rules():
                 "required": True,
                 "content": {"multipart/form-data": {"schema": upload_schema}},
             }
-        if method == "POST" and suffix in ["/analysis/jobs", "/exports", "/comparisons"]:
+        if method == "POST" and suffix in ["/analysis/jobs", "/exports", "/comparisons", "/bulk-selections"]:
             operation["responses"]["202"] = {
                 "description": "Trabajo persistido para procesamiento asíncrono; consultar progreso y estado."
             }

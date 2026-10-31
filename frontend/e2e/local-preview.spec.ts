@@ -9,7 +9,7 @@ test('entrada local sin credenciales y login protegido conservado',async({page})
   const parcels=await page.request.get('http://127.0.0.1:8787/api/v1/parcels?limit=1')
   expect(parcels.status()).toBe(200)
   expect((await parcels.json()).items).toHaveLength(1)
-  for(const path of ['dashboard','analysis','imports','comparisons','reviews','exports','admin','settings']){
+  for(const path of ['dashboard','multi-selection','analysis','imports','comparisons','reviews','exports','admin','settings']){
     await page.goto(`http://127.0.0.1:8787/${path}`)
     await expect(page.getByRole('heading',{level:1})).toBeVisible()
     await expect(page.getByText('Modo de prueba local',{exact:true})).toBeVisible()

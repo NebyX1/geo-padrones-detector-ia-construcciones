@@ -675,6 +675,13 @@
             }
           },
           {
+            "name": "bulk_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "comparison_id",
             "in": "query",
             "schema": {
@@ -830,6 +837,13 @@
           },
           {
             "name": "review_status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
             "in": "query",
             "schema": {
               "type": "string"
@@ -932,6 +946,13 @@
             }
           },
           {
+            "name": "bulk_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "comparison_id",
             "in": "query",
             "schema": {
@@ -1087,6 +1108,13 @@
           },
           {
             "name": "review_status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
             "in": "query",
             "schema": {
               "type": "string"
@@ -3806,6 +3834,13 @@
             }
           },
           {
+            "name": "bulk_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "comparison_id",
             "in": "query",
             "schema": {
@@ -3961,6 +3996,13 @@
           },
           {
             "name": "review_status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
             "in": "query",
             "schema": {
               "type": "string"
@@ -4466,6 +4508,635 @@
             "schema": {
               "type": "string"
             }
+          }
+        ]
+      }
+    },
+    "/api/v1/bulk-selections/preview": {
+      "post": {
+        "operationId": "bulk_analysis_preview_post",
+        "summary": "bulk analysis · preview",
+        "tags": [
+          "bulk-selections"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "bounds": {
+                    "type": "array",
+                    "minItems": 4,
+                    "maxItems": 4,
+                    "items": {
+                      "type": "number"
+                    },
+                    "description": "Oeste, sur, este y norte en WGS84; selección completa sin truncar por el mapa."
+                  },
+                  "locality": {
+                    "type": "string"
+                  },
+                  "q": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "scene_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bulk-selections": {
+      "get": {
+        "operationId": "bulk_analysis_selections_get",
+        "summary": "bulk analysis · selections",
+        "tags": [
+          "bulk-selections"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "bulk_analysis_selections_post",
+        "summary": "bulk analysis · selections",
+        "tags": [
+          "bulk-selections"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          },
+          "202": {
+            "description": "Trabajo persistido para procesamiento asíncrono; consultar progreso y estado."
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "bounds": {
+                    "type": "array",
+                    "minItems": 4,
+                    "maxItems": 4,
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "locality": {
+                    "type": "string"
+                  },
+                  "q": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "scene_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "model_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "probability": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 0.99
+                  },
+                  "min_area": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "maxLength": 64
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/bulk-selections/{identifier}": {
+      "get": {
+        "operationId": "bulk_analysis_detail_get",
+        "summary": "bulk analysis · detail",
+        "tags": [
+          "bulk-selections"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/bulk-selections/{identifier}/results": {
+      "get": {
+        "operationId": "bulk_analysis_results_get",
+        "summary": "bulk analysis · results",
+        "tags": [
+          "bulk-selections"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "analyzed_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "analyzed_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigned_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "batch_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bulk_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comparison_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comparison_state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "department",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "has_notes",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ids",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "land_use",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locality",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_area",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_buildings",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_occupancy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_area",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_buildings",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_confidence",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_coverage",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_occupancy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "model_version_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "padron_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "padron_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "review_status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/bulk-selections/{identifier}/cancel": {
+      "post": {
+        "operationId": "bulk_analysis_cancel_post",
+        "summary": "bulk analysis · cancel",
+        "tags": [
+          "bulk-selections"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": [],
+            "csrf": []
           }
         ]
       }

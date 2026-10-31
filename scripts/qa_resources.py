@@ -34,4 +34,5 @@ def cleanup_queue(name, redis_url):
     queue.delete(delete_jobs=True)
     for registry in registries:
         connection.delete(registry.key)
+    connection.delete("geopadrones:storage-usage:" + name)
     connection.close()

@@ -1,27 +1,27 @@
 {
-  "checked_at": "2026-10-31T03:14:46.681178+00:00",
+  "checked_at": "2026-10-31T04:14:14.750975+00:00",
   "scope": "Local software verification; no production deployment or local accuracy certification",
   "tests": {
     "backend": {
-      "tests": 79,
+      "tests": 86,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 20.344
+      "seconds": 27.743
     },
     "frontend": {
       "tests": 10,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 2.095
+      "seconds": 2.098
     },
     "e2e": {
-      "tests": 2,
+      "tests": 3,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "seconds": 119.483
+      "seconds": 59.595
     }
   },
   "npm_audit": {
@@ -63,7 +63,16 @@
     "concurrency": 8,
     "errors": 0,
     "p50_ms": 79,
-    "p95_ms": 136
+    "p95_ms": 158
+  },
+  "bulk_selection": {
+    "scope": "Disposable real official Minas geometries and actual FLAIR inference; not an accuracy assessment",
+    "batchId": "e59764f3-2a28-4dae-899f-b7a958a55389",
+    "parcels": 10,
+    "states": {
+      "CON_CONSTRUCCION_VISIBLE": 10
+    },
+    "exported_filtered": 7
   },
   "inference": {
     "real_inference": true,
@@ -111,17 +120,5 @@
     "selection": "50 per cadastral area quartile, deterministic identity hash; official imagery bounding rectangle only",
     "notice": "Check valid imagery and semantic strata manually. No geometry or class labels were fabricated.",
     "sha256": "cfefa3cb8cca4ea290d64367070213c61221240e1c5ef98470fc5c74f172bb5b"
-  },
-  "auth_update": {
-    "checked_at": "2026-10-31T03:16:05.461195+00:00",
-    "protected_checkpoint": "auth-captcha-2fa-preserved",
-    "protected_commit": "22bfbd9",
-    "numeric_captcha": "sample/admin style; 1..10 + 1..10; server-validated; one-use; 10-minute expiry",
-    "local_preview_enabled": true,
-    "default_preview_flag": false,
-    "production_refuses_preview": true,
-    "tested_protected_api_status_before_preview": 401,
-    "tested_preview_api_status": 200,
-    "qa_resources_removed": true
   }
 }

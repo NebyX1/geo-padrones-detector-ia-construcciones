@@ -160,9 +160,20 @@ def create_app(config_name=None, overrides=None):
     from .routes.versions import bp as versions
     from .routes.reviews import bp as review_evidence
     from .routes.analytics import bp as analytics
+    from .routes.bulk_analysis import bp as bulk_analysis
     from .cli import register_commands
 
-    for blueprint in (auth, cadastre, workflow, admin, preferences, versions, review_evidence, analytics):
+    for blueprint in (
+        auth,
+        cadastre,
+        workflow,
+        admin,
+        preferences,
+        versions,
+        review_evidence,
+        analytics,
+        bulk_analysis,
+    ):
         app.register_blueprint(blueprint, url_prefix="/api/v1")
     register_commands(app)
 

@@ -216,6 +216,32 @@ class AnalysisRun(Base):
     parameters = db.Column(db.JSON, nullable=False)
 
 
+class BulkSelection(Base):
+    __tablename__ = "bulk_selections"
+    user_id = db.Column(db.ForeignKey("users.id"), nullable=False)
+    name = db.Column(db.String(120), nullable=False)
+    bounds = db.Column(db.JSON, nullable=False)
+    selection_filters = db.Column(db.JSON, nullable=False)
+    scene_id = db.Column(db.ForeignKey("imagery_scenes.id"), nullable=False)
+    model_version_id = db.Column(db.ForeignKey("model_versions.id"), nullable=False)
+    parameters = db.Column(db.JSON, nullable=False)
+    request_payload = db.Column(db.JSON, nullable=False)
+    idempotency_key = db.Column(db.String(64), nullable=False)
+    total = db.Column(db.Integer, nullable=False)
+    cancel_requested = db.Column(db.Boolean, nullable=False, default=False)
+    __table_args__ = (db.UniqueConstraint("user_id", "idempotency_key"),)
+
+
+class BulkSelectionItem(Base):
+    __tablename__ = "bulk_selection_items"
+    selection_id = db.Column(db.ForeignKey("bulk_selections.id"), nullable=False, index=True)
+    parcel_id = db.Column(db.ForeignKey("parcels.id"), nullable=False, index=True)
+    parcel_version_id = db.Column(db.ForeignKey("cadastral_versions.id"), nullable=False)
+    parcel_area_m2 = db.Column(db.Float, nullable=False)
+    job_id = db.Column(db.ForeignKey("jobs.id"), nullable=False, index=True)
+    __table_args__ = (db.UniqueConstraint("selection_id", "parcel_id"),)
+
+
 class ParcelAnalysisResult(Base):
     __tablename__ = "parcel_results"
     run_id = db.Column(db.ForeignKey("analysis_runs.id"), nullable=False, index=True)

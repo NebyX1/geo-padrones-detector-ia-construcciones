@@ -3,6 +3,9 @@ from pathlib import Path, PurePosixPath
 from flask import current_app
 from minio import Minio
 from urllib3 import PoolManager, Timeout, Retry
+from redis import Redis
+from redis.exceptions import RedisError
+from minio.error import S3Error
 from ..extensions import db
 
 
@@ -56,23 +59,53 @@ class ObjectStorage:
                 lock_name = "storage-quota:" + self.bucket
                 connection.execute(db.text("SELECT pg_advisory_lock(hashtext(:name))"), {"name": lock_name})
                 try:
-                    used = sum(
-                        o.size
-                        for o in self.client.list_objects(self.bucket, recursive=True)
-                        if o.object_name != key
-                    )
-                    if used + len(content) > self.config["MAX_STORAGE_BYTES"]:
-                        raise ValueError(
-                            "Se alcanzó la cuota de almacenamiento; libere espacio o amplíe el límite."
-                        )
-                    self.client.put_object(
-                        self.bucket, key, io.BytesIO(content), len(content), content_type=content_type
-                    )
+                    self._put_with_quota(key, content, content_type)
                 finally:
                     connection.execute(
                         db.text("SELECT pg_advisory_unlock(hashtext(:name))"), {"name": lock_name}
                     )
         return key
+
+    def _put_with_quota(self, key, content, content_type):
+        """Global usage cache under the PostgreSQL lock; no full S3 listing per mask.
+
+        Invalidate before writing so interrupted uploads force reconciliation. The
+        Redis server run-id rejects stale AOF cache values after a Redis restart.
+        """
+        counter = Redis.from_url(self.config["REDIS_URL"], socket_connect_timeout=2, socket_timeout=3)
+        cache_key = "geopadrones:storage-usage:" + self.bucket
+        try:
+            server_id = counter.info("server")["run_id"]
+            cached = counter.get(cache_key)
+            previous_id, _, amount = cached.decode().partition(":") if cached else ("", "", "")
+            used = (
+                int(amount)
+                if previous_id == server_id and amount.isdigit()
+                else sum(obj.size for obj in self.client.list_objects(self.bucket, recursive=True))
+            )
+            try:
+                old_size = self.client.stat_object(self.bucket, key).size
+            except S3Error as error:
+                if error.code not in {"NoSuchKey", "NoSuchObject"}:
+                    raise
+                old_size = 0
+            new_size = max(0, used - old_size) + len(content)
+            if new_size > self.config["MAX_STORAGE_BYTES"]:
+                raise ValueError("Se alcanzó la cuota de almacenamiento; libere espacio o amplíe el límite.")
+            counter.delete(cache_key)
+            self.client.put_object(
+                self.bucket, key, io.BytesIO(content), len(content), content_type=content_type
+            )
+            try:
+                counter.set(cache_key, f"{server_id}:{new_size}", ex=300)
+            except RedisError:
+                pass  # The key was invalidated; the next writer reconciles actual objects.
+        except RedisError:
+            raise ValueError(
+                "No se pudo sincronizar la cuota de almacenamiento con Redis. Reintente cuando el servicio esté disponible."
+            ) from None
+        finally:
+            counter.close()
 
     def get(self, key):
         key = safe_key(key)

@@ -15,7 +15,7 @@ from ..models import (
     ImportedParcelDeclaration,
     ParcelComparisonResult,
 )
-from ..repositories.parcels import base_query, filters, serialize
+from ..repositories.parcels import base_query, filters, serialize, ordered
 from ..utils.security import require
 
 bp = Blueprint("cadastre", __name__)
@@ -87,10 +87,16 @@ def parcels():
         and not request.args.get("ids")
     ):
         abort(422, "Indique bbox, búsqueda o selección para consultar geometrías.")
-    query = filters(base_query(geometry), request.args).order_by(Parcel.codloccat, Parcel.padron, Parcel.id)
+    bulk_id = request.args.get("bulk_id")
+    query = filters(base_query(geometry, bulk_id), request.args)
+    query = (
+        ordered(query, request.args.get("sort", "footprint_desc"))
+        if request.args.get("sort")
+        else query.order_by(Parcel.codloccat, Parcel.padron, Parcel.id)
+    )
     rows = db.session.execute(query.limit(limit + 1).offset(offset)).all()
     more = len(rows) > limit
-    items = [serialize(row, geometry) for row in rows[:limit]]
+    items = [serialize(row, geometry, bulk=bool(bulk_id)) for row in rows[:limit]]
     if request.args.get("comparison_id") and items:
         states = dict(
             db.session.execute(

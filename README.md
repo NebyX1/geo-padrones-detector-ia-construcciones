@@ -83,7 +83,7 @@ Los tests backend crean y eliminan una base PostGIS aleatoria aislada. Incluyen 
 
 End-to-end: `scripts/qa_server.py` crea una base, bucket, cola y cuenta de fixture temporales, carga una muestra oficial y levanta un worker Docker. Iniciar Vite en frontend (`$env:VITE_PROXY_TARGET="http://127.0.0.1:5051"; npm run dev`, proxy exclusivo de QA) y ejecutar `npm run test:e2e` con Edge/Chromium. Detener el servidor al finalizar; si una interrupción del sistema impide su finally, `scripts/qa_cleanup.py NOMBRE_EXACTO_BASE_QA` limpia únicamente recursos con formato y manifiesto de propiedad verificados. No usar fixtures como evidencia administrativa.
 
-La suite actual contiene 79 pruebas backend, 10 frontend y dos pruebas de aceptación Playwright. La comprobación de dependencias no detectó vulnerabilidades conocidas; no sustituye el mantenimiento continuo.
+La suite actual contiene 86 pruebas backend, 10 frontend y tres pruebas de aceptación Playwright. Incluye selección múltiple, filtros, orden y exportación de resultados históricos. La comprobación de dependencias documentada no detectó vulnerabilidades conocidas; no sustituye el mantenimiento continuo.
 
 Reportes, máscaras, GeoJSON, benchmark y capturas se guardan en artifacts/, excluido de Git. [Verificación ejecutada](docs/validation/VERIFIED_RUN.json), [informe del modelo](docs/validation/MODEL_REPORT.md), [estado por misión](docs/missions/STATUS.md), [plan](docs/missions/PLAN.md), [OpenAPI](docs/api/openapi.json).
 
@@ -91,7 +91,7 @@ Reportes, máscaras, GeoJSON, benchmark y capturas se guardan en artifacts/, exc
 
 - Imagen y modelo están versionados con fuente, fecha y hash. La captura se muestra como diciembre 2025, conservando precisión de mes.
 - Huella visible no equivale a superficie total edificada ni a una determinación jurídica. Ausencia de datos se clasifica como indeterminada.
-- Descargas e inferencias por sectores: límite inicial 100 padrones / 100.000 m², 16 millones de píxeles, CSV 10 MB y cuota de objetos configurable. No se infiere automáticamente todo el departamento.
+- Descargas e inferencias por sectores: límite de 100 padrones / 100.000 m² por trabajo, 16 millones de píxeles, CSV 10 MB y cuota de objetos configurable. [Selección múltiple](docs/BULK_SELECTION.md) admite 5.000 padrones por lote y lo divide en subtareas de hasta 50, con analítica, orden y CSV de todos los casos filtrados. No se infiere automáticamente todo el departamento.
 - PostgreSQL, Redis y MinIO son privados en Compose principal. Producción exige cookies Secure, HTTPS y rol de base sin privilegios administrativos; [ADR-003](docs/decisions/ADR-003-production-roles.md).
 - MinIO se compila desde fuente oficial archivada y commit fijado, porque las imágenes públicas probadas no están disponibles. Su mantenimiento y licencia AGPL deben revisarse antes de producción.
 - Pendientes: etiquetado independiente de al menos 200 padrones; evaluación de otras ortofotos/localidades; completar vínculo normativo de categorías; ensayo de carga y validación de la infraestructura productiva. Ver el estado detallado, sin marcar esos puntos como terminados.

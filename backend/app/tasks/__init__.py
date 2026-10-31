@@ -52,11 +52,7 @@ def analyze(job):
     model_version = db.session.get(AIModelVersion, run.model_version_id)
     if not model_version.enabled:
         raise ValueError("El modelo fue deshabilitado.")
-    model = load_model(
-        str(current_app.config["MODEL_DIR"] / model_version.filename),
-        model_version.sha256,
-        current_app.config["MODEL_DEVICE"],
-    )
+    model = None
     params = run.parameters
     for index, parcel_id in enumerate(job.payload["parcel_ids"], start=1):
         progress(job.id)
@@ -69,18 +65,33 @@ def analyze(job):
             progress(job.id, index)
             continue
         parcel = db.session.get(Parcel, parcel_id)
+        expected_version = job.payload.get("expected_versions", {}).get(parcel_id, parcel.source_version_id)
         result = ParcelAnalysisResult(
             run_id=run.id,
             parcel_id=parcel.id,
-            parcel_version_id=parcel.source_version_id,
+            parcel_version_id=expected_version,
             state="ERROR_ANALISIS",
             coverage=0,
         )
         try:
+            if parcel.source_version_id != expected_version:
+                raise ValueError(
+                    "El catastro cambió después de seleccionar la parcela; seleccione y analice nuevamente."
+                )
+            if not parcel.active:
+                raise ValueError("La parcela está inactiva desde la selección; requiere revisión.")
+            if reason := job.payload.get("skip_reasons", {}).get(parcel_id):
+                raise ValueError(reason)
             metric = reproject(to_shape(parcel.geom))
             bounds = metric.buffer(8).bounds
             raw, asset = download_crop(scene, bounds)
             rgb, valid, affine, crs = read_rgb(raw)
+            if model is None:
+                model = load_model(
+                    str(current_app.config["MODEL_DIR"] / model_version.filename),
+                    model_version.sha256,
+                    current_app.config["MODEL_DEVICE"],
+                )
             probabilities = segment(
                 rgb, model, current_app.config["MODEL_DEVICE"], callback=lambda: progress(job.id)
             )
@@ -145,11 +156,17 @@ def analyze(job):
             db.session.rollback()
             # Expose safe operational categories only; not SQL, object keys, passwords or URLs with credentials.
             message = str(exc) if isinstance(exc, ValueError) else type(exc).__name__
-            state = "INDETERMINADO" if "Sin cobertura" in message else "ERROR_ANALISIS"
+            state = (
+                "INDETERMINADO"
+                if message.startswith(
+                    ("Sin cobertura", "La parcela supera", "El catastro cambió", "La parcela está inactiva")
+                )
+                else "ERROR_ANALISIS"
+            )
             result = ParcelAnalysisResult(
                 run_id=run.id,
                 parcel_id=parcel.id,
-                parcel_version_id=parcel.source_version_id,
+                parcel_version_id=expected_version,
                 state=state,
                 coverage=0,
                 error=message[:300],

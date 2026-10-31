@@ -542,6 +542,12 @@ def create_export():
     if set(data.get("filters", {})) - allowed:
         abort(422, "Filtro no admitido.")
     values = data.get("filters", {})
+    if values.get("bulk_id"):
+        from ..models import BulkSelection
+
+        db.get_or_404(BulkSelection, values["bulk_id"])
+        if values.get("comparison_id") or values.get("comparison_state"):
+            abort(422, "Exporte la selección múltiple y la comparación por separado.")
     for key, value in values.items():
         if key == "ids":
             if not isinstance(value, (str, list)) or (
@@ -552,7 +558,7 @@ def create_export():
             abort(422, "Tipo de filtro inválido.")
     from ..repositories.parcels import filters, base_query
 
-    filters(base_query(), values)  # Validate numeric/date/bbox filters before durable enqueue.
+    filters(base_query(bulk_id=values.get("bulk_id")), values)  # Validate filters before durable enqueue.
     job, _ = new_job("export", current_user.id, data, request.headers.get("Idempotency-Key"))
     audit("EXPORT_REQUEST", job.id, {"filters": data.get("filters", {})})
     db.session.commit()

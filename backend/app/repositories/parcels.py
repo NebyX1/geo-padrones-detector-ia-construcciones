@@ -13,6 +13,9 @@ from ..models import (
     LandUseCategory,
     ImportedParcelDeclaration,
     ParcelComparisonResult,
+    BulkSelectionItem,
+    ParcelGeometryVersion,
+    Job,
 )
 
 FILTER_KEYS = {
@@ -44,6 +47,8 @@ FILTER_KEYS = {
     "has_notes",
     "comparison_id",
     "comparison_state",
+    "bulk_id",
+    "sort",
 }
 
 
@@ -57,7 +62,7 @@ def filters(query, params):
         query = query.where(or_(Parcel.padron.ilike(f"%{q}%"), CadastralLocality.name.ilike(f"%{q}%")))
     if params.get("state"):
         if params["state"] == "NO_ANALIZADO":
-            query = query.where(Parcel.current_result_id.is_(None))
+            query = query.where(ParcelAnalysisResult.id.is_(None))
         else:
             query = query.where(ParcelAnalysisResult.state == params["state"])
     for field, op in [("min_area", ">="), ("max_area", "<=")]:
@@ -84,7 +89,11 @@ def filters(query, params):
                 raise ValueError()
         except (ValueError, TypeError):
             abort(422, "Extensión geográfica inválida.")
-        query = query.where(func.ST_Intersects(Parcel.geom, func.ST_MakeEnvelope(*bbox, 4326)))
+        query = query.where(
+            func.ST_Intersects(
+                parcel_geometry(bool(params.get("bulk_id"))), func.ST_MakeEnvelope(*bbox, 4326)
+            )
+        )
     if params.get("ids"):
         ids = params["ids"] if isinstance(params["ids"], list) else str(params["ids"]).split(",")
         query = query.where(Parcel.id.in_(ids[:10000]))
@@ -198,22 +207,85 @@ def filters(query, params):
                 .where(*terms)
             )
         )
-    return query.where(Parcel.active.is_(True))
+    if params.get("sort") and params["sort"] not in {
+        "footprint_desc",
+        "footprint_asc",
+        "padron",
+        "occupancy_desc",
+    }:
+        abort(422, "Orden no admitido.")
+    return query if params.get("bulk_id") else query.where(Parcel.active.is_(True))
 
 
-def base_query(geometry=False):
-    columns = [Parcel, CadastralLocality.name.label("locality"), ParcelAnalysisResult, ReviewCase]
-    if geometry:
-        columns.append(func.ST_AsGeoJSON(Parcel.geom).label("geometry"))
+def parcel_geometry(bulk=False):
+    if not bulk:
+        return Parcel.geom
     return (
-        select(*columns)
-        .join(CadastralLocality, Parcel.locality_id == CadastralLocality.id)
-        .outerjoin(ParcelAnalysisResult, Parcel.current_result_id == ParcelAnalysisResult.id)
-        .outerjoin(ReviewCase, ParcelAnalysisResult.id == ReviewCase.result_id)
+        select(func.ST_Multi(func.ST_UnaryUnion(func.ST_Collect(ParcelGeometryVersion.geom))))
+        .where(
+            ParcelGeometryVersion.parcel_id == BulkSelectionItem.parcel_id,
+            ParcelGeometryVersion.dataset_version_id == BulkSelectionItem.parcel_version_id,
+        )
+        .correlate(BulkSelectionItem)
+        .scalar_subquery()
     )
 
 
-def serialize(row, geometry=False):
+def base_query(geometry=False, bulk_id=None):
+    columns = [Parcel, CadastralLocality.name.label("locality"), ParcelAnalysisResult, ReviewCase]
+    geometry_column = parcel_geometry(bool(bulk_id))
+    if bulk_id:
+        columns.extend(
+            [
+                BulkSelectionItem.parcel_area_m2,
+                Job.status.label("processing_status"),
+                BulkSelectionItem.parcel_version_id,
+            ]
+        )
+    if geometry:
+        # The wrapper also prevents GeoAlchemy's record overload from treating a scalar SELECT as a table.
+        columns.append(func.ST_AsGeoJSON(func.ST_Multi(geometry_column)).label("geometry"))
+    query = (
+        select(*columns)
+        .select_from(Parcel)
+        .join(CadastralLocality, Parcel.locality_id == CadastralLocality.id)
+    )
+    if bulk_id:
+        run = (
+            select(AnalysisRun.id)
+            .where(AnalysisRun.job_id == BulkSelectionItem.job_id)
+            .correlate(BulkSelectionItem)
+            .scalar_subquery()
+        )
+        query = (
+            query.join(BulkSelectionItem, BulkSelectionItem.parcel_id == Parcel.id)
+            .join(Job, Job.id == BulkSelectionItem.job_id)
+            .outerjoin(
+                ParcelAnalysisResult,
+                (ParcelAnalysisResult.parcel_id == Parcel.id) & (ParcelAnalysisResult.run_id == run),
+            )
+            .where(BulkSelectionItem.selection_id == bulk_id)
+        )
+    else:
+        query = query.outerjoin(ParcelAnalysisResult, Parcel.current_result_id == ParcelAnalysisResult.id)
+    return query.outerjoin(ReviewCase, ParcelAnalysisResult.id == ReviewCase.result_id)
+
+
+def ordered(query, sort="footprint_desc"):
+    columns = {
+        "footprint_desc": ParcelAnalysisResult.m2_huella_detectada.desc().nullslast(),
+        "footprint_asc": ParcelAnalysisResult.m2_huella_detectada.asc().nullslast(),
+        "occupancy_desc": ParcelAnalysisResult.occupancy.desc().nullslast(),
+        "padron": case((Parcel.padron.op("~")("^[0-9]+$"), cast(Parcel.padron, Numeric)), else_=None)
+        .asc()
+        .nullslast(),
+    }
+    if sort not in columns:
+        abort(422, "Orden no admitido.")
+    return query.order_by(columns[sort], Parcel.codloccat, Parcel.padron, Parcel.id)
+
+
+def serialize(row, geometry=False, bulk=False):
     parcel, locality, result, review = row[:4]
     props = dict(
         id=parcel.id,
@@ -221,7 +293,7 @@ def serialize(row, geometry=False):
         codloccat=parcel.codloccat,
         padron=parcel.padron,
         locality=locality,
-        m2_parcela=parcel.m2_parcela,
+        m2_parcela=row[4] if bulk else parcel.m2_parcela,
         state=result.state if result else "NO_ANALIZADO",
         result_id=result.id if result else None,
         m2_huella_detectada=result.m2_huella_detectada if result else None,
@@ -229,9 +301,12 @@ def serialize(row, geometry=False):
         confidence=result.confidence if result else None,
         occupancy=result.occupancy if result else None,
         building_count=result.building_count if result else None,
+        error=result.error if result else None,
         review_id=review.id if review else None,
         review_status=review.status if review else "PENDIENTE_REVISION",
     )
+    if bulk:
+        props.update(processing_status=row[5], selection_version_id=row[6])
     if geometry:
         return dict(type="Feature", id=parcel.id, geometry=json.loads(row[-1]), properties=props)
     return props

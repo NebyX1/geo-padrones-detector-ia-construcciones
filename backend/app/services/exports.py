@@ -14,7 +14,7 @@ from ..models import (
     ParcelComparisonResult,
     ImportedParcelDeclaration,
 )
-from ..repositories.parcels import base_query, filters, serialize
+from ..repositories.parcels import base_query, filters, serialize, ordered
 from .storage import storage
 
 
@@ -29,8 +29,14 @@ def safe_cell(value):
     return value
 
 
-def export_records(params):
-    query = filters(base_query(True), params).order_by(Parcel.id)
+def export_records(params, geometry=True):
+    bulk_id = params.get("bulk_id")
+    query = filters(base_query(geometry, bulk_id), params)
+    query = (
+        ordered(query, params.get("sort", "footprint_desc"))
+        if params.get("sort") or bulk_id
+        else query.order_by(Parcel.id)
+    )
     comparison_id = params.get("comparison_id")
     if comparison_id:
         query = (
@@ -47,7 +53,9 @@ def export_records(params):
             query = query.where(ParcelComparisonResult.state == params["comparison_state"])
     for row in db.session.execute(query).yield_per(250):
         parcel, _, result, review = row[:4]
-        feature = serialize(row[:5], True)
+        prefix = (7 if bulk_id else 4) + (1 if geometry else 0)
+        data = serialize(row[:prefix], geometry, bulk=bool(bulk_id))
+        feature = data if geometry else {"type": "Feature", "geometry": None, "properties": data}
         props = feature["properties"]
         if comparison_id:
             comparison, declaration = row[-2:]
@@ -72,9 +80,16 @@ def export_records(params):
                 review_status=review.status if review else "PENDIENTE_REVISION",
             )
         props["version_catastral_actual"] = parcel.source_version_id
+        if bulk_id:
+            props.update(
+                lote_seleccion=bulk_id,
+                estado_proceso=props.pop("processing_status"),
+                version_catastral_seleccion=props.pop("selection_version_id"),
+            )
         props["version_catastral_analisis"] = result.parcel_version_id if result else None
         props["departamento"] = "LAVALLEJA"
         props["estado_ia"] = props.pop("state")
+        props["error_analisis"] = props.pop("error", None)
         props["fecha_imagen"] = props["fuente_imagen"] = props["modelo"] = props["version_modelo"] = props[
             "fecha_analisis"
         ] = None
@@ -199,10 +214,14 @@ def generate_export(job, callback):
             "diferencia_m2",
             "diferencia_porcentual",
             "advertencia",
+            "lote_seleccion",
+            "estado_proceso",
+            "version_catastral_seleccion",
+            "error_analisis",
         ]
         writer = csv.DictWriter(output, fieldnames=fields, extrasaction="ignore")
         writer.writeheader()
-        for feature in export_records(params):
+        for feature in export_records(params, geometry=False):
             writer.writerow({k: safe_cell(v) for k, v in feature["properties"].items()})
             count += 1
             if count % 250 == 0:

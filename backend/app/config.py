@@ -57,6 +57,8 @@ def settings(name):
         MAX_CONTENT_LENGTH=int(os.getenv("MAX_UPLOAD_SIZE", "10485760")),
         MAX_ANALYSIS_AREA=float(os.getenv("MAX_ANALYSIS_AREA", "100000")),
         MAX_ANALYSIS_PARCELS=int(os.getenv("MAX_ANALYSIS_PARCELS", "100")),
+        MAX_BULK_PARCELS=int(os.getenv("MAX_BULK_PARCELS", "5000")),
+        BULK_CHUNK_SIZE=int(os.getenv("BULK_CHUNK_SIZE", "50")),
         MAX_RASTER_PIXELS=int(os.getenv("MAX_RASTER_PIXELS", "16000000")),
         MAX_STORAGE_BYTES=int(os.getenv("MAX_STORAGE_BYTES", "10737418240")),
         RQ_QUEUE=os.getenv("RQ_QUEUE", "geopadrones"),

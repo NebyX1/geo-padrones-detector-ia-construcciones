@@ -32,6 +32,7 @@ python_audit = json.loads((root / "artifacts/tests/python-audit.json").read_text
 report["python_known_vulnerabilities"] = sum(len(d.get("vulns", [])) for d in python_audit["dependencies"])
 report["restore_and_production_role"] = json.loads((root / "artifacts/tests/operations.json").read_text())
 report["http_load"] = json.loads((root / "artifacts/tests/http-load.json").read_text())
+report["bulk_selection"] = json.loads((root / "artifacts/tests/bulk-real.json").read_text())
 report["inference"] = json.loads((root / "artifacts/benchmark/report.json").read_text())
 spatial = json.loads((root / "artifacts/spatial-benchmark.json").read_text())
 report["spatial_benchmark"] = {key: value for key, value in spatial.items() if key != "plan"}
