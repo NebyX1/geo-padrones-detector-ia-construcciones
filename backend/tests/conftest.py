@@ -77,8 +77,18 @@ def login(client, role="superadmin"):
     db.session.add(user)
     db.session.commit()
     with mail.record_messages() as messages:
-        response = post(client, "/auth/login", {"email": user.email, "password": "Test-only-password-2026"})
+        response = post(
+            client,
+            "/auth/login",
+            {"email": user.email, "password": "Test-only-password-2026", **captcha_payload(client)},
+        )
         assert response.status_code == 200
         code = re.search(r"\b\d{6}\b", messages[-1].body).group()
     assert post(client, "/auth/2fa/verify", {"code": code}).status_code == 200
     return user
+
+
+def captcha_payload(client):
+    challenge = client.get("/api/v1/auth/captcha").json
+    left, right = map(int, challenge["question"].split(" + "))
+    return {"captcha_id": challenge["id"], "captcha_answer": str(left + right)}

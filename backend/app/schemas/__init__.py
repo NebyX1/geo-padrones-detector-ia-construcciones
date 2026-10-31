@@ -18,6 +18,8 @@ class StrictSchema(Schema):
 class LoginSchema(StrictSchema):
     email = fields.Email(required=True)
     password = fields.String(required=True, validate=validate.Length(min=1, max=256))
+    captcha_id = fields.UUID(required=True)
+    captcha_answer = fields.String(required=True, validate=validate.Regexp(r"^[0-9]{1,2}$"))
 
 
 class UserSchema(StrictSchema):

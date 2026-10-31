@@ -98,6 +98,9 @@ def csrf_token():
 @limiter.limit("5 per minute; 30 per hour")
 def login():
     data = load(LoginSchema(), request.get_json())
+    from ..services.captcha import consume_captcha
+
+    consume_captcha(str(data["captcha_id"]), data["captcha_answer"])
     user = db.session.execute(
         select(User).where(User.email == data["email"].strip().lower())
     ).scalar_one_or_none()
@@ -117,6 +120,14 @@ def login():
     audit("LOGIN_CHALLENGE", user_id=user.id)
     db.session.commit()
     return jsonify(requires_2fa=True)
+
+
+@bp.get("/auth/captcha")
+@limiter.limit("20 per minute")
+def captcha():
+    from ..services.captcha import create_captcha
+
+    return jsonify(create_captcha())
 
 
 @bp.post("/auth/2fa/verify")

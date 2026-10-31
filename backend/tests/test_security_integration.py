@@ -2,7 +2,7 @@ import re
 import pytest
 from app.extensions import db, mail
 from app.models import User, AuthChallenge
-from conftest import login, post
+from conftest import login, post, captcha_payload
 
 pytestmark = pytest.mark.integration
 
@@ -45,7 +45,9 @@ def test_five_wrong_codes_lock_challenge(client):
     with mail.record_messages() as messages:
         assert (
             post(
-                client, "/auth/login", {"email": user.email, "password": "Test-only-password-2026"}
+                client,
+                "/auth/login",
+                {"email": user.email, "password": "Test-only-password-2026", **captcha_payload(client)},
             ).status_code
             == 200
         )

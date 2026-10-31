@@ -68,6 +68,14 @@ class AuthChallenge(Base):
     consumed_at = db.Column(db.DateTime(timezone=True))
 
 
+class LoginCaptcha(Base):
+    __tablename__ = "login_captchas"
+    browser_digest = db.Column(db.String(64), nullable=False, index=True)
+    answer_digest = db.Column(db.String(64), nullable=False)
+    expires_at = db.Column(db.DateTime(timezone=True), nullable=False, index=True)
+    consumed_at = db.Column(db.DateTime(timezone=True))
+
+
 class AuditLog(Base):
     __tablename__ = "audit_logs"
     user_id = db.Column(db.ForeignKey("users.id"), index=True)
