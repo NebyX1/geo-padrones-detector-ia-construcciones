@@ -1,0 +1,4664 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "GeoPadrones Lavalleja",
+    "version": "0.1.0",
+    "description": "API de catastro, evidencia aérea, inferencia, declaraciones y revisión. Todas las mutaciones requieren X-CSRFToken, incluyendo login."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/csrf": {
+      "get": {
+        "operationId": "auth_csrf_token_get",
+        "summary": "auth · csrf token",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "auth_login_post",
+        "summary": "auth · login",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/2fa/verify": {
+      "post": {
+        "operationId": "auth_verify_post",
+        "summary": "auth · verify",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^[0-9]{6}$"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "auth_me_get",
+        "summary": "auth · me",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "auth_logout_post",
+        "summary": "auth · logout",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/password/forgot": {
+      "post": {
+        "operationId": "auth_forgot_post",
+        "summary": "auth · forgot",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password/reset": {
+      "post": {
+        "operationId": "auth_reset_post",
+        "summary": "auth · reset",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "challenge_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "code": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 256
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password/change": {
+      "post": {
+        "operationId": "auth_change_password_post",
+        "summary": "auth · change password",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "current_password": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 12
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/parcels/select": {
+      "post": {
+        "operationId": "cadastre_select_polygon_post",
+        "summary": "cadastre · select polygon",
+        "tags": [
+          "parcels"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/localities": {
+      "get": {
+        "operationId": "cadastre_localities_get",
+        "summary": "cadastre · localities",
+        "tags": [
+          "localities"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/parcels/search": {
+      "get": {
+        "operationId": "cadastre_parcels_get",
+        "summary": "cadastre · parcels",
+        "tags": [
+          "parcels"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "analyzed_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "analyzed_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigned_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "batch_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comparison_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comparison_state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "department",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "has_notes",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ids",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "land_use",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locality",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_area",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_buildings",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_occupancy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_area",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_buildings",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_confidence",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_coverage",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_occupancy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "model_version_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "padron_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "padron_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "review_status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/parcels": {
+      "get": {
+        "operationId": "cadastre_parcels_get",
+        "summary": "cadastre · parcels",
+        "tags": [
+          "parcels"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "analyzed_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "analyzed_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigned_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "batch_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comparison_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comparison_state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "department",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "has_notes",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ids",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "land_use",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locality",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_area",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_buildings",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_occupancy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_area",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_buildings",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_confidence",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_coverage",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_occupancy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "model_version_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "padron_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "padron_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "review_status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/parcels/{identifier}": {
+      "get": {
+        "operationId": "cadastre_parcel_detail_get",
+        "summary": "cadastre · parcel detail",
+        "tags": [
+          "parcels"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/parcels/tiles/{z}/{x}/{y}.pbf": {
+      "get": {
+        "operationId": "cadastre_vector_tile_get",
+        "summary": "cadastre · vector tile",
+        "tags": [
+          "parcels"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "z",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "y",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/land-use/categories": {
+      "get": {
+        "operationId": "cadastre_categories_get",
+        "summary": "cadastre · categories",
+        "tags": [
+          "land-use"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/imagery/scenes": {
+      "get": {
+        "operationId": "cadastre_scenes_get",
+        "summary": "cadastre · scenes",
+        "tags": [
+          "imagery"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/imagery/scenes/{identifier}": {
+      "get": {
+        "operationId": "cadastre_scene_detail_get",
+        "summary": "cadastre · scene detail",
+        "tags": [
+          "imagery"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/imagery/scenes/{identifier}/tiles/{z}/{x}/{y}.png": {
+      "get": {
+        "operationId": "cadastre_image_tile_get",
+        "summary": "cadastre · image tile",
+        "tags": [
+          "imagery"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "z",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "y",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/models": {
+      "get": {
+        "operationId": "cadastre_models_get",
+        "summary": "cadastre · models",
+        "tags": [
+          "models"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/imagery/historical/tiles/{z}/{x}/{y}.png": {
+      "get": {
+        "operationId": "cadastre_historical_tile_get",
+        "summary": "cadastre · historical tile",
+        "tags": [
+          "imagery"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "z",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "y",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/models/{identifier}": {
+      "get": {
+        "operationId": "cadastre_model_detail_get",
+        "summary": "cadastre · model detail",
+        "tags": [
+          "models"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "admin_update_model_patch",
+        "summary": "admin · update model",
+        "tags": [
+          "models"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/analysis/jobs": {
+      "post": {
+        "operationId": "workflow_create_analysis_post",
+        "summary": "workflow · create analysis",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          },
+          "202": {
+            "description": "Trabajo persistido para procesamiento asíncrono; consultar progreso y estado."
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "parcel_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  },
+                  "scene_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "model_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "probability": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 0.99,
+                    "default": 0.5
+                  },
+                  "min_area": {
+                    "type": "number",
+                    "minimum": 0,
+                    "default": 8
+                  },
+                  "min_occupancy": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 0.01
+                  },
+                  "min_coverage": {
+                    "type": "number",
+                    "minimum": 0.5,
+                    "maximum": 1,
+                    "default": 0.95
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "maxLength": 64
+            }
+          }
+        ]
+      },
+      "get": {
+        "operationId": "workflow_jobs_get",
+        "summary": "workflow · jobs",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/analysis/jobs/{identifier}": {
+      "get": {
+        "operationId": "workflow_job_detail_get",
+        "summary": "workflow · job detail",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/analysis/jobs/{identifier}/cancel": {
+      "post": {
+        "operationId": "workflow_cancel_job_post",
+        "summary": "workflow · cancel job",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/analysis/runs/{identifier}/results": {
+      "get": {
+        "operationId": "workflow_run_results_get",
+        "summary": "workflow · run results",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/analysis/results/{identifier}/mask": {
+      "get": {
+        "operationId": "workflow_result_mask_get",
+        "summary": "workflow · result mask",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/analysis/results/{identifier}/overlay.json": {
+      "get": {
+        "operationId": "workflow_mask_metadata_get",
+        "summary": "workflow · mask metadata",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/analysis/results/{identifier}/overlay.png": {
+      "get": {
+        "operationId": "workflow_mask_image_get",
+        "summary": "workflow · mask image",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/imports/csv": {
+      "post": {
+        "operationId": "workflow_upload_csv_post",
+        "summary": "workflow · upload csv",
+        "tags": [
+          "imports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "encoding": {
+                    "enum": [
+                      "utf-8-sig",
+                      "utf-8",
+                      "cp1252"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imports": {
+      "get": {
+        "operationId": "workflow_imports_get",
+        "summary": "workflow · imports",
+        "tags": [
+          "imports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/imports/{identifier}": {
+      "get": {
+        "operationId": "workflow_import_detail_get",
+        "summary": "workflow · import detail",
+        "tags": [
+          "imports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/imports/{identifier}/validate": {
+      "post": {
+        "operationId": "workflow_validate_import_post",
+        "summary": "workflow · validate import",
+        "tags": [
+          "imports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/imports/{identifier}/confirm": {
+      "post": {
+        "operationId": "workflow_confirm_import_post",
+        "summary": "workflow · confirm import",
+        "tags": [
+          "imports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/imports/mappings": {
+      "get": {
+        "operationId": "workflow_mappings_get",
+        "summary": "workflow · mappings",
+        "tags": [
+          "imports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "workflow_mappings_post",
+        "summary": "workflow · mappings",
+        "tags": [
+          "imports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/comparisons": {
+      "post": {
+        "operationId": "workflow_create_comparison_post",
+        "summary": "workflow · create comparison",
+        "tags": [
+          "comparisons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          },
+          "202": {
+            "description": "Trabajo persistido para procesamiento asíncrono; consultar progreso y estado."
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "batch_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "absolute_tolerance": {
+                    "type": "number",
+                    "default": 20
+                  },
+                  "percent_tolerance": {
+                    "type": "number",
+                    "default": 20
+                  },
+                  "comparable_area": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "maxLength": 64
+            }
+          }
+        ]
+      },
+      "get": {
+        "operationId": "workflow_comparisons_get",
+        "summary": "workflow · comparisons",
+        "tags": [
+          "comparisons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/comparisons/{identifier}/results": {
+      "get": {
+        "operationId": "workflow_comparison_results_get",
+        "summary": "workflow · comparison results",
+        "tags": [
+          "comparisons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/comparisons/{identifier}": {
+      "get": {
+        "operationId": "workflow_comparison_results_get",
+        "summary": "workflow · comparison results",
+        "tags": [
+          "comparisons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/reviews": {
+      "get": {
+        "operationId": "workflow_reviews_get",
+        "summary": "workflow · reviews",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/reviews/{identifier}": {
+      "patch": {
+        "operationId": "workflow_review_case_patch",
+        "summary": "workflow · review case",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "status": {
+                    "enum": [
+                      "CONFIRMADO",
+                      "CORREGIDO",
+                      "RECHAZADO"
+                    ]
+                  },
+                  "state": {
+                    "enum": [
+                      "CON_CONSTRUCCION_VISIBLE",
+                      "SIN_CONSTRUCCION_VISIBLE",
+                      "INDETERMINADO"
+                    ]
+                  },
+                  "observations": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 4000
+                  },
+                  "geometry": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "description": "GeoJSON EPSG:4326; el servidor recorta y calcula área en EPSG:5382."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "review_evidence_detail_get",
+        "summary": "review evidence · detail",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/exports": {
+      "post": {
+        "operationId": "workflow_create_export_post",
+        "summary": "workflow · create export",
+        "tags": [
+          "exports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          },
+          "202": {
+            "description": "Trabajo persistido para procesamiento asíncrono; consultar progreso y estado."
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "format": {
+                    "enum": [
+                      "csv",
+                      "geojson"
+                    ]
+                  },
+                  "filters": {
+                    "type": "object",
+                    "description": "locality,q,state,min_area,max_area,bbox,ids,review_status,comparison_id,comparison_state; selección y filtros exactos."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "maxLength": 64
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/exports/{identifier}": {
+      "get": {
+        "operationId": "workflow_export_status_get",
+        "summary": "workflow · export status",
+        "tags": [
+          "exports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/exports/{identifier}/download": {
+      "get": {
+        "operationId": "workflow_download_export_get",
+        "summary": "workflow · download export",
+        "tags": [
+          "exports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "operationId": "admin_users_get",
+        "summary": "admin · users",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "admin_create_user_post",
+        "summary": "admin · create user",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 12
+                  },
+                  "role": {
+                    "enum": [
+                      "superadmin",
+                      "admin",
+                      "analyst",
+                      "reviewer",
+                      "viewer"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{identifier}": {
+      "patch": {
+        "operationId": "admin_edit_user_patch",
+        "summary": "admin · edit user",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/{identifier}/reset-access": {
+      "post": {
+        "operationId": "admin_reset_access_post",
+        "summary": "admin · reset access",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/audit": {
+      "get": {
+        "operationId": "admin_audit_logs_get",
+        "summary": "admin · audit logs",
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/settings": {
+      "get": {
+        "operationId": "admin_settings_get",
+        "summary": "admin · settings",
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "admin_settings_patch",
+        "summary": "admin · settings",
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dashboard": {
+      "get": {
+        "operationId": "admin_dashboard_get",
+        "summary": "admin · dashboard",
+        "tags": [
+          "dashboard"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "analyzed_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "analyzed_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigned_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "batch_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comparison_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comparison_state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "department",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "has_notes",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ids",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "land_use",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locality",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_area",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_buildings",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "max_occupancy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_area",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_buildings",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_confidence",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_coverage",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_occupancy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "model_version_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "padron_from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "padron_to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "review_status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/preferences": {
+      "get": {
+        "operationId": "preferences_preferences_get",
+        "summary": "preferences · preferences",
+        "tags": [
+          "preferences"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/cadastral/versions": {
+      "get": {
+        "operationId": "versions_versions_get",
+        "summary": "versions · versions",
+        "tags": [
+          "cadastral"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/cadastral/versions/{old_id}/differences/{new_id}": {
+      "get": {
+        "operationId": "versions_differences_get",
+        "summary": "versions · differences",
+        "tags": [
+          "cadastral"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "old_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "new_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/reviews/{identifier}/attachments": {
+      "get": {
+        "operationId": "review_evidence_attachments_get",
+        "summary": "review evidence · attachments",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "review_evidence_attachments_post",
+        "summary": "review evidence · attachments",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file",
+                  "authorized"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "authorized": {
+                    "type": "string",
+                    "const": "true"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reviews/{identifier}/attachments/{attachment_id}": {
+      "get": {
+        "operationId": "review_evidence_download_get",
+        "summary": "review evidence · download",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "attachment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/reviews/{identifier}/request-analysis": {
+      "post": {
+        "operationId": "review_evidence_request_analysis_post",
+        "summary": "review evidence · request analysis",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dashboard/analytics": {
+      "get": {
+        "operationId": "analytics_analytics_get",
+        "summary": "analytics · analytics",
+        "tags": [
+          "dashboard"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "health_get",
+        "summary": "health",
+        "tags": [
+          "health"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": []
+      }
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "operationId": "ready_get",
+        "summary": "ready",
+        "tags": [
+          "health"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": []
+      }
+    },
+    "/api/v1/metrics": {
+      "get": {
+        "operationId": "metrics_get",
+        "summary": "metrics",
+        "tags": [
+          "metrics"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/openapi.json": {
+      "get": {
+        "operationId": "openapi_get",
+        "summary": "openapi",
+        "tags": [
+          "openapi.json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "geopadrones_session"
+      },
+      "csrf": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-CSRFToken"
+      }
+    }
+  },
+  "security": [
+    {
+      "session": []
+    }
+  ]
+}

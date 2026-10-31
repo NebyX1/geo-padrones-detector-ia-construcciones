@@ -1,0 +1,4 @@
+coddepto;codloccat;padron;construido;m2;observaciones
+P;AA;00012;NO;0;FIXTURE SINTÉTICO para validación de identificadores. No constituye declaración real.
+P;AA;00012;SI;100;FIXTURE SINTÉTICO contradictorio y duplicado para probar incidencias.
+P;ZZ;999999999;NO;0;FIXTURE SINTÉTICO no conciliado.

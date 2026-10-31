@@ -1,0 +1,10 @@
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from 'react-hot-toast'
+import { queryClient } from './lib/query-client'
+import { AuthProvider } from './features/auth/AuthProvider'
+import App from './app/App'
+import 'leaflet/dist/leaflet.css'
+import './styles/global.css'
+createRoot(document.getElementById('root')!).render(<StrictMode><QueryClientProvider client={queryClient}><AuthProvider><App/></AuthProvider><Toaster position="top-right" toastOptions={{style:{borderRadius:'12px',fontSize:'13px',border:'1px solid #e5e1d8'}}}/></QueryClientProvider></StrictMode>)

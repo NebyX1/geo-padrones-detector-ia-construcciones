@@ -1,0 +1,6 @@
+-r ../backend/requirements.txt
+torch==2.6.0
+torchvision==0.21.0
+segmentation-models-pytorch==0.3.4
+timm==0.9.7
+huggingface-hub==0.28.1

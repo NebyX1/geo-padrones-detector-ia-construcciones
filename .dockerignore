@@ -1,0 +1,12 @@
+sample
+.git
+.env
+.env.*
+**/__pycache__
+**/*.pyc
+**/node_modules
+**/.pytest_cache
+.venv
+data
+artifacts
+**/*.log

@@ -1,0 +1,137 @@
+name: geopadrones
+
+x-app: &app
+  env_file: .env
+  environment: &app-env
+    FLASK_CONFIG: ${FLASK_CONFIG:-production}
+    DATABASE_URL: postgresql+psycopg://${DATABASE_APP_USER:-${POSTGRES_USER}}:${DATABASE_APP_PASSWORD:-${POSTGRES_PASSWORD}}@postgres-postgis:5432/${POSTGRES_DB}
+    REDIS_URL: redis://redis:6379/0
+    MINIO_ENDPOINT: minio:9000
+    DATA_DIR: /data/runtime
+    MODEL_DIR: /data/models
+    MAIL_SERVER: ${MAIL_SERVER:-mailpit}
+    TRUST_PROXY: 'true'
+  networks: [internal, outbound]
+  volumes: [runtime:/data/runtime, './data/models:/data/models:ro']
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: {max-size: '10m', max-file: '3'}
+
+services:
+  postgres-postgis:
+    image: postgis/postgis:16-3.5
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Configure POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?Configure POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configure POSTGRES_PASSWORD}
+      DATABASE_APP_USER: ${DATABASE_APP_USER:-}
+      DATABASE_APP_PASSWORD: ${DATABASE_APP_PASSWORD:-}
+    volumes: [postgres:/var/lib/postgresql/data, './infra/postgres/90-app-role.sh:/docker-entrypoint-initdb.d/90-app-role.sh:ro']
+    networks: [internal]
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 1g
+  redis:
+    image: redis:7.4.2-alpine
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory', '256mb', '--maxmemory-policy', 'noeviction']
+    volumes: [redis:/data]
+    networks: [internal]
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 384m
+  minio:
+    image: geopadrones-minio:local
+    build: {context: ., dockerfile: infra/minio/Dockerfile}
+    command: server /data --console-address ':9001'
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:?Configure MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:?Configure MINIO_SECRET_KEY}
+    volumes: [objects:/data]
+    networks: [internal]
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:9000/minio/health/live']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 512m
+  init:
+    <<: *app
+    image: geopadrones-api:local
+    build: {context: ., dockerfile: backend/Dockerfile}
+    command: ['sh', '-c', 'flask db upgrade && flask init-bucket']
+    restart: 'no'
+    depends_on:
+      postgres-postgis: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      minio: {condition: service_healthy}
+  backend:
+    <<: *app
+    image: geopadrones-api:local
+    build: {context: ., dockerfile: backend/Dockerfile}
+    depends_on:
+      init: {condition: service_completed_successfully}
+    healthcheck:
+      test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/v1/health',timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+    mem_limit: 1g
+  models:
+    <<: *app
+    image: geopadrones-api:local
+    build: {context: ., dockerfile: backend/Dockerfile}
+    profiles: [maintenance]
+    command: ['python', '/app/scripts/download_models.py', '--directory', '/data/models']
+    volumes: [runtime:/data/runtime, './data/models:/data/models']
+    restart: 'no'
+  worker:
+    <<: *app
+    image: geopadrones-worker:local
+    build: {context: ., dockerfile: worker/Dockerfile}
+    command: ['python', '/app/worker/run.py']
+    depends_on:
+      init: {condition: service_completed_successfully}
+    mem_limit: 4g
+    cpus: 2
+    deploy:
+      replicas: ${WORKER_CONCURRENCY:-1}
+    stop_grace_period: 60s
+  dispatcher:
+    <<: *app
+    image: geopadrones-api:local
+    command: ['python', '/app/scripts/dispatch.py']
+    depends_on:
+      init: {condition: service_completed_successfully}
+    mem_limit: 256m
+  frontend:
+    build: {context: ./frontend, args: {VITE_API_URL: /api/v1}}
+    networks: [internal, outbound]
+    ports: ['127.0.0.1:${HTTP_PORT:-8787}:80']
+    depends_on:
+      backend: {condition: service_healthy}
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://127.0.0.1/health']
+      interval: 15s
+      timeout: 3s
+      retries: 5
+    mem_limit: 128m
+
+networks:
+  internal: {internal: true}
+  outbound: {}
+volumes:
+  postgres: {}
+  redis: {}
+  objects: {}
+  runtime: {}

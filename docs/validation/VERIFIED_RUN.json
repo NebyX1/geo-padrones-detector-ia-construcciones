@@ -1,0 +1,123 @@
+{
+  "checked_at": "2026-10-31T02:50:44.539206+00:00",
+  "scope": "Local software verification; no production deployment or local accuracy certification",
+  "tests": {
+    "backend": {
+      "tests": 71,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 15.688
+    },
+    "frontend": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.089
+    },
+    "e2e": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 41.533
+    }
+  },
+  "npm_audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "python_known_vulnerabilities": 0,
+  "restore_and_production_role": {
+    "checked_at": "2026-10-31T02:31:07.386341+00:00",
+    "backup": "geopadrones-20261031T023018Z.dump",
+    "restore": {
+      "parcels": 25953,
+      "localities": 18,
+      "land_use_categories": 117,
+      "invalid_geometries": 0,
+      "migration": "f2a08bc931d7"
+    },
+    "application_role": {
+      "superuser": false,
+      "createdb": false,
+      "createrole": false,
+      "migrations": "passed"
+    },
+    "production_http": {
+      "health": 200,
+      "readiness": 200,
+      "application_https_redirect": true
+    },
+    "privileged_role_rejected": true,
+    "temporary_resources_removed": true
+  },
+  "http_load": {
+    "scope": "Disposable QA database; 201 real geometries; Flask threaded development server via Vite; not a production capacity certification",
+    "requests": 40,
+    "concurrency": 8,
+    "errors": 0,
+    "p50_ms": 74,
+    "p95_ms": 175
+  },
+  "inference": {
+    "real_inference": true,
+    "model_revision": "533aa8f000dd36f2d07279ae73e0263d5f23a976",
+    "checkpoint_sha256": "b7900cb1cf34f137c2f86a002dc99bca402d5a0139f8ad6253589ece416a511f",
+    "output_channels": 19,
+    "building_channel": 0,
+    "raster": "data\\raw\\minas-sector.tif",
+    "crs": "EPSG:5382",
+    "pixels": [
+      1300,
+      1300
+    ],
+    "resolution_m": 0.1999999999999991,
+    "model_load_seconds": 7.024561800000811,
+    "inference_seconds": 8.99345270000049,
+    "detected_polygons": 74,
+    "footprint_area_m2": 38830.80000003208,
+    "valid_image_area_m2": 67600.0,
+    "validated_local_accuracy": null
+  },
+  "spatial_benchmark": {
+    "real_database": true,
+    "scope": "sector real Minas 260x260 m",
+    "iterations": 20,
+    "returned_parcels": 201,
+    "median_ms": 2.1273499996823375,
+    "p95_ms": 3.213800000594347,
+    "first_ms": 112.31279999992694,
+    "notice": "Medición local con caché caliente; no sustituye una prueba de carga concurrente."
+  },
+  "local_readiness": {
+    "checks": {
+      "postgis": true,
+      "redis": true,
+      "storage": true
+    },
+    "status": "ok"
+  },
+  "validation_sample": {
+    "created_at": "2026-10-31T02:48:50.671326+00:00",
+    "count": 200,
+    "independently_labelled": false,
+    "predictions_generated": false,
+    "selection": "50 per cadastral area quartile, deterministic identity hash; official imagery bounding rectangle only",
+    "notice": "Check valid imagery and semantic strata manually. No geometry or class labels were fabricated.",
+    "sha256": "cfefa3cb8cca4ea290d64367070213c61221240e1c5ef98470fc5c74f172bb5b"
+  },
+  "temporary_resource_cleanup": {
+    "databases_remaining": 0,
+    "buckets_remaining": 0,
+    "queues_remaining": 0,
+    "qa_worker_containers_remaining": 0,
+    "auxiliary_previews_closed": true,
+    "persistent_qa_account_created": false
+  }
+}
