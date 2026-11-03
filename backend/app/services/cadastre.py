@@ -133,9 +133,11 @@ def import_file(filename, land_use=False):
         raise ValueError("No se importará una versión vacía del catastro.")
     retired = 0
     if not land_use and manifest.get("complete") and not manifest.get("bbox") and not issues:
+        # This WFS snapshot is urban-only; R is the separately imported rural
+        # identity namespace, so an urban refresh must never retire it.
         missing = db.session.execute(
             text(
-                "SELECT count(*) FROM parcels WHERE coddepto=:department AND source_version_id<>:version AND active"
+                "SELECT count(*) FROM parcels WHERE coddepto=:department AND codloccat <> 'R' AND source_version_id<>:version AND active"
             ),
             {"department": "P", "version": version.id},
         ).scalar()
@@ -145,7 +147,7 @@ def import_file(filename, land_use=False):
             )
         retired = db.session.execute(
             text(
-                "UPDATE parcels SET active=false WHERE coddepto=:department AND source_version_id<>:version AND active"
+                "UPDATE parcels SET active=false WHERE coddepto=:department AND codloccat <> 'R' AND source_version_id<>:version AND active"
             ),
             {"department": "P", "version": version.id},
         ).rowcount

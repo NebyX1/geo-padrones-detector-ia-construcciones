@@ -1841,6 +1841,14 @@
                     "type": "string",
                     "format": "uuid"
                   },
+                  "device": {
+                    "enum": [
+                      "cpu",
+                      "cuda"
+                    ],
+                    "default": "cpu",
+                    "description": "Procesador del worker; cuda requiere GPU NVIDIA disponible en el servidor."
+                  },
                   "probability": {
                     "type": "number",
                     "minimum": 0.1,
@@ -4720,6 +4728,13 @@
                     "type": "string",
                     "format": "uuid"
                   },
+                  "device": {
+                    "enum": [
+                      "cpu",
+                      "cuda"
+                    ],
+                    "default": "cpu"
+                  },
                   "probability": {
                     "type": "number",
                     "minimum": 0.1,
@@ -5141,6 +5156,761 @@
         ]
       }
     },
+    "/api/v1/analysis/cleanup/preview": {
+      "post": {
+        "operationId": "analysis_cleanup_preview_post",
+        "summary": "analysis cleanup · preview",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/analysis/cleanup": {
+      "post": {
+        "operationId": "analysis_cleanup_remove_post",
+        "summary": "analysis cleanup · remove",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ]
+      }
+    },
+    "/api/v1/analysis/cleanup/status": {
+      "get": {
+        "operationId": "analysis_cleanup_status_get",
+        "summary": "analysis cleanup · status",
+        "tags": [
+          "analysis"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint"
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/catastro-comparar/options": {
+      "get": {
+        "operationId": "cadastre_compare_compare_options_get",
+        "summary": "cadastre compare · compare options",
+        "tags": [
+          "catastro-comparar"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "categories": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CadastreCompareOption"
+                      }
+                    },
+                    "localities": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CadastreCompareOption"
+                      }
+                    },
+                    "states": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CadastreCompareOption"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          },
+          "503": {
+            "description": "Referencia catastral no disponible o inválida."
+          }
+        },
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "todos",
+                "urbano",
+                "suburbano",
+                "rural",
+                "sin_clase"
+              ],
+              "default": "todos"
+            }
+          }
+        ],
+        "description": "La categoría proviene del cruce territorial. Los valores desconocidos o los resultados del modelo indeterminados no se clasifican como discrepancias. Cada comparación usa exclusivamente los resultados de su propio lote."
+      }
+    },
+    "/api/v1/catastro-comparar/preview": {
+      "post": {
+        "operationId": "cadastre_compare_compare_preview_post",
+        "summary": "cadastre compare · compare preview",
+        "tags": [
+          "catastro-comparar"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CadastreComparePreview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          },
+          "503": {
+            "description": "Referencia catastral no disponible o inválida."
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "todos",
+                      "urbano",
+                      "suburbano",
+                      "rural",
+                      "sin_clase"
+                    ],
+                    "default": "todos"
+                  },
+                  "locality": {
+                    "type": "string",
+                    "maxLength": 40,
+                    "default": "todos",
+                    "description": "Código DNC, todos o sin_localidad."
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "todos",
+                      "si",
+                      "no",
+                      "desconocido"
+                    ],
+                    "default": "todos",
+                    "description": "Construcción informada por Catastro; desconocido no equivale a no."
+                  },
+                  "padron_desde": {
+                    "oneOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]{1,9}$"
+                      }
+                    ],
+                    "description": "Límite inclusivo; permite subdividir selecciones amplias."
+                  },
+                  "padron_hasta": {
+                    "oneOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]{1,9}$"
+                      }
+                    ],
+                    "description": "Límite inclusivo; no puede ser menor que padron_desde."
+                  },
+                  "scene_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "La categoría proviene del cruce territorial. Los valores desconocidos o los resultados del modelo indeterminados no se clasifican como discrepancias. Cada comparación usa exclusivamente los resultados de su propio lote."
+      }
+    },
+    "/api/v1/catastro-comparar/runs": {
+      "post": {
+        "operationId": "cadastre_compare_compare_start_post",
+        "summary": "cadastre compare · compare start",
+        "tags": [
+          "catastro-comparar"
+        ],
+        "responses": {
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          },
+          "202": {
+            "description": "Trabajo persistido para procesamiento asíncrono; consultar progreso y estado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "batch": {
+                      "$ref": "#/components/schemas/CadastreCompareBatch"
+                    },
+                    "preview": {
+                      "$ref": "#/components/schemas/CadastreComparePreview"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Referencia catastral no disponible o inválida."
+          }
+        },
+        "security": [
+          {
+            "session": [],
+            "csrf": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "todos",
+                      "urbano",
+                      "suburbano",
+                      "rural",
+                      "sin_clase"
+                    ],
+                    "default": "todos"
+                  },
+                  "locality": {
+                    "type": "string",
+                    "maxLength": 40,
+                    "default": "todos",
+                    "description": "Código DNC, todos o sin_localidad."
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "todos",
+                      "si",
+                      "no",
+                      "desconocido"
+                    ],
+                    "default": "todos",
+                    "description": "Construcción informada por Catastro; desconocido no equivale a no."
+                  },
+                  "padron_desde": {
+                    "oneOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]{1,9}$"
+                      }
+                    ],
+                    "description": "Límite inclusivo; permite subdividir selecciones amplias."
+                  },
+                  "padron_hasta": {
+                    "oneOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9]{1,9}$"
+                      }
+                    ],
+                    "description": "Límite inclusivo; no puede ser menor que padron_desde."
+                  },
+                  "scene_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "model_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "device": {
+                    "type": "string",
+                    "enum": [
+                      "cpu",
+                      "cuda"
+                    ],
+                    "default": "cpu"
+                  },
+                  "probability": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 0.99
+                  },
+                  "min_area": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "min_object_area": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "min_occupancy": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "min_coverage": {
+                    "type": "number",
+                    "minimum": 0.5,
+                    "maximum": 1
+                  },
+                  "max_image_age_days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 36500
+                  }
+                },
+                "required": [
+                  "scene_id",
+                  "model_version_id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "maxLength": 64
+            }
+          }
+        ],
+        "description": "La categoría proviene del cruce territorial. Los valores desconocidos o los resultados del modelo indeterminados no se clasifican como discrepancias. Cada comparación usa exclusivamente los resultados de su propio lote."
+      },
+      "get": {
+        "operationId": "cadastre_compare_compare_history_get",
+        "summary": "cadastre compare · compare history",
+        "tags": [
+          "catastro-comparar"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CadastreCompareBatch"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          },
+          "503": {
+            "description": "Referencia catastral no disponible o inválida."
+          }
+        },
+        "description": "La categoría proviene del cruce territorial. Los valores desconocidos o los resultados del modelo indeterminados no se clasifican como discrepancias. Cada comparación usa exclusivamente los resultados de su propio lote."
+      }
+    },
+    "/api/v1/catastro-comparar/runs/{identifier}": {
+      "get": {
+        "operationId": "cadastre_compare_compare_detail_get",
+        "summary": "cadastre compare · compare detail",
+        "tags": [
+          "catastro-comparar"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "batch": {
+                      "$ref": "#/components/schemas/CadastreCompareBatch"
+                    },
+                    "preview": {
+                      "$ref": "#/components/schemas/CadastreComparePreview"
+                    },
+                    "summary": {
+                      "$ref": "#/components/schemas/CadastreCompareSummary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          },
+          "503": {
+            "description": "Referencia catastral no disponible o inválida."
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "La categoría proviene del cruce territorial. Los valores desconocidos o los resultados del modelo indeterminados no se clasifican como discrepancias. Cada comparación usa exclusivamente los resultados de su propio lote."
+      }
+    },
+    "/api/v1/catastro-comparar/runs/{identifier}/features": {
+      "get": {
+        "operationId": "cadastre_compare_compare_features_get",
+        "summary": "cadastre compare · compare features",
+        "tags": [
+          "catastro-comparar"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado JSON, imagen o archivo según endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CadastreCompareFeatureCollection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CSRF ausente/vencido o petición inválida"
+          },
+          "401": {
+            "description": "Sesión requerida/revocada"
+          },
+          "403": {
+            "description": "Rol sin permiso"
+          },
+          "404": {
+            "description": "Registro no encontrado"
+          },
+          "409": {
+            "description": "Conflicto o versión concurrente"
+          },
+          "422": {
+            "description": "Validación de datos"
+          },
+          "429": {
+            "description": "Límite de solicitudes"
+          },
+          "500": {
+            "description": "Error interno sin detalles sensibles"
+          },
+          "503": {
+            "description": "Referencia catastral no disponible o inválida."
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Oeste,sur,este,norte en WGS84."
+          },
+          {
+            "name": "outcome",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "todos",
+                "discrepancia",
+                "coincide",
+                "sin_referencia",
+                "indeterminado",
+                "pendiente"
+              ],
+              "default": "todos"
+            }
+          }
+        ],
+        "description": "La categoría proviene del cruce territorial. Los valores desconocidos o los resultados del modelo indeterminados no se clasifican como discrepancias. Cada comparación usa exclusivamente los resultados de su propio lote."
+      }
+    },
     "/api/v1/health": {
       "get": {
         "operationId": "health_get",
@@ -5371,6 +6141,263 @@
         "type": "apiKey",
         "in": "header",
         "name": "X-CSRFToken"
+      }
+    },
+    "schemas": {
+      "CadastreComparePreview": {
+        "type": "object",
+        "description": "Solo available se procesa; el resto se contabiliza por motivo. Los registros con líneas sin resumen se identifican por separado.",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "available": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unavailable": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sin_geometria": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "no_conciliados": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "fuera_cobertura": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "supera_limites": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "lineas_sin_resumen": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "max_parcels": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mapped": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "can_analyze": {
+            "type": "boolean"
+          },
+          "dataset_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      },
+      "CadastreCompareOption": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "CadastreCompareSummary": {
+        "type": "object",
+        "properties": {
+          "discrepancia": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "coincide": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sin_referencia": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "indeterminado": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pendiente": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "CadastreCompareBatch": {
+        "type": "object",
+        "description": "Lote persistido; selection_filters conserva los filtros y el resumen de excluidos.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "processed": {
+            "type": "integer"
+          },
+          "bounds": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": {
+              "type": "number"
+            }
+          },
+          "selection_filters": {
+            "type": "object"
+          },
+          "jobs": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "cancel_requested": {
+            "type": "boolean"
+          },
+          "scene_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "model_version_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "parameters": {
+            "type": "object"
+          }
+        }
+      },
+      "CadastreCompareFeatureCollection": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "FeatureCollection"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "Feature"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "geometry": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "parcel_id": {
+                      "type": "string"
+                    },
+                    "padron": {
+                      "type": "string"
+                    },
+                    "locality": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "categoria_suelo": {
+                      "type": "string"
+                    },
+                    "codigo_localidad": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "processing_status": {
+                      "type": "string"
+                    },
+                    "declared_building": {
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    "model_state": {
+                      "type": "string"
+                    },
+                    "outcome": {
+                      "enum": [
+                        "discrepancia",
+                        "coincide",
+                        "sin_referencia",
+                        "indeterminado",
+                        "pendiente"
+                      ]
+                    },
+                    "m2_huella_detectada": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "coverage": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "result_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "tiene_registro_alfanumerico": {
+                      "type": "boolean"
+                    },
+                    "lineas_sin_resumen": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },

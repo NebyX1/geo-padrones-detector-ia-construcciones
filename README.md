@@ -2,40 +2,19 @@
 
 Plataforma municipal de exploración catastral, segmentación de construcciones visibles, cálculo de huellas en m², comparación de declaraciones y revisión humana. Implementación real con React/Vite y Flask, PostgreSQL/PostGIS, RQ/Redis y MinIO. **El flujo principal fue probado de extremo a extremo con ortofoto, parcelas e inferencia reales. No se certifica todavía precisión local ni habilitación para producción institucional.**
 
+La pestaña **Comparar** permite filtrar la referencia de Catastro por categoría territorial, localidad y construcción declarada, ejecutar un lote de análisis y destacar posibles discrepancias en el mapa. La cobertura de imagen habilitada para inferencia corresponde al vuelo de Minas de diciembre de 2025; los casos sin referencia o sin imagen suficiente no se consideran discrepancias automáticamente. Véase [Comparar Catastro](docs/COMPARAR_CATASTRO.md).
+
 ## Acceso temporal para pruebas locales
 
-Por pedido del usuario, la instancia local puede entrar directamente sin autenticación. Login, captcha numérico y doble factor están preservados en el código y en el checkpoint `auth-captcha-2fa-preserved`. El login sigue disponible en `/login`. Activar/desactivar mediante `scripts/set_local_preview.py on|off --restart`; solo development/localhost, bloqueado en producción. Ver [modos de acceso](docs/AUTH_MODES.md).
+La instancia local puede habilitar entrada directa sin autenticación. El login, captcha numérico y doble factor se conservan; el login está disponible en `/login`. `scripts/set_local_preview.py on|off` cambia la opción para development; después recree los servicios con los mismos archivos Compose usados al iniciar. El modo directo está bloqueado en producción. Si usa GPU, no utilice el atajo `--restart`, pues no incluye el override GPU. Ver [modos de acceso](docs/AUTH_MODES.md) y [Setup](Setup/README.md).
 
 ## Ejecutar
 
-Requiere Docker/Compose v2, Python 3.11 y recursos disponibles (orientación inicial: 4 CPU, 8 GB RAM y 15 GB de disco). Desde la raíz:
+Para reconstruir la instalación desde un clon sin los pesos ni los datos, siga **[Setup: instalación paso a paso](Setup/README.md)**. La guía incluye Windows y Linux, descarga y verificación de FLAIR y UNet++, configuración CPU o GPU NVIDIA, carga de imágenes y catastro, y la preparación de la pestaña Comparar. Las fuentes, revisiones y hashes figuran en [Fuentes y límites](Setup/FUENTES_Y_LIMITES.md). El documento [Project_Info.pdf](Setup/Project_Info.pdf) explica el proyecto en lenguaje claro.
 
-```powershell
-python scripts/init_local.py
-docker compose -f docker-compose.yml -f docker-compose.dev.yml build
-docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm models
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
-docker compose exec backend flask create-admin
-docker compose exec backend flask register-model /data/models/manifest.json
-docker compose exec backend flask register-imagery
-```
+Se requiere Docker/Compose v2, Python 3.11 y conexión a las fuentes; para probar y compilar el frontend localmente, Node.js 22. La orientación inicial es 4 CPU, 8 GB RAM y 15 GB de disco, con espacio adicional para GPU y datos. La aplicación se abre en **http://localhost:8787** y Mailpit de desarrollo en http://localhost:8125. El administrador inicial se crea con prompts y contraseña oculta; no existe una cuenta persistente por defecto.
 
-Abrir **http://localhost:8787**. El administrador inicial se crea con prompts y contraseña oculta; no existe cuenta persistente por defecto. Correo de pruebas en http://localhost:8125. En producción usar SMTP institucional con TLS/SSL y variables privadas, sin el override dev.
-
-Para datos catastrales desde Python local:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r backend/requirements-dev.txt
-.\.venv\Scripts\python.exe scripts/download_cadastre.py
-.\.venv\Scripts\python.exe scripts/import_cadastre.py data/raw/lavalleja.ndjson
-.\.venv\Scripts\python.exe scripts/download_cadastre.py --land-use --output data/raw/land-use.ndjson
-.\.venv\Scripts\python.exe scripts/import_cadastre.py data/raw/land-use.ndjson --land-use
-```
-
-También pueden ejecutarse esos scripts en el contenedor API: copiar el archivo y su manifiesto a `/data/runtime/import/`, luego ejecutar el importador contra esa ruta. Véase [Docker](docs/deployment/DOCKER.md).
-
-La instancia local preparada durante el desarrollo ya tiene 25.994 geometrías catastrales oficiales, agrupadas en 25.953 identidades de 18 localidades, 117 categorías de suelo, escena Minas 2025 y modelo registrado. Se detectaron 41 piezas adicionales con claves repetidas. Los totales se obtuvieron de la fuente; no se codifican como constantes.
+Las fuentes públicas y sus fechas pueden cambiar. El código y las instrucciones no restauran por sí solos usuarios, resultados, revisiones ni las copias exactas originales de los datos: para recuperar ese estado se necesitan los archivos originales y un respaldo consistente y autorizado de la instalación.
 
 ## Arquitectura y referencias
 
@@ -45,7 +24,7 @@ flowchart LR
   Nginx --> API[Flask /api/v1]
   API --> PG[(PostgreSQL / PostGIS)]
   API --> RQ[(Redis / RQ)]
-  RQ --> W[Worker CPU / PyTorch FLAIR]
+  RQ --> W[Worker CPU o GPU / FLAIR o UNet++]
   W --> PG
   W --> S3[(MinIO privado)]
   W --> IDE[IDE WFS / WCS]
@@ -53,11 +32,13 @@ flowchart LR
   API --> SMTP[SMTP / 2FA]
 ```
 
-Las referencias obligatorias están clonadas en sample/frontend y sample/backend y excluidas de Git y de los builds. Auditoría y SHA exactos en [ARQUITECTURA_SAMPLE](docs/ARQUITECTURA_SAMPLE.md). Se conservan factory Flask, extensiones, SQLAlchemy/Alembic, sesiones Flask-Login, Argon2, CSRF, Marshmallow, Blueprints y separación por servicios; frontend por features, Axios central, React Query, Zustand, RHF/Zod, Tailwind/DaisyUI, Framer Motion y diseño institucional.
+Las referencias usadas durante el desarrollo se documentan en [ARQUITECTURA_SAMPLE](docs/ARQUITECTURA_SAMPLE.md); `sample/` está excluido de Git y no es necesario para ejecutar la aplicación. Se conservan factory Flask, extensiones, SQLAlchemy/Alembic, sesiones Flask-Login, Argon2, CSRF, Marshmallow, Blueprints y separación por servicios; frontend por features, Axios central, React Query, Zustand, RHF/Zod, Tailwind/DaisyUI, Framer Motion y diseño institucional.
 
 PostGIS sustituye MariaDB para GiST, consultas por bbox, MVT e intersecciones métricas. Las geometrías originales y reparaciones se versionan. Cuando cambia la geometría de una parcela se invalida su resultado actual, conservando la inferencia histórica. Las correcciones humanas no sobrescriben resultados automáticos.
 
 ## Evidencia real
+
+El código incorpora la selección del modelo FLAIR o UNet++ registrado y de CPU o GPU NVIDIA en el worker. La prueba local de velocidad y los pasos de instalación figuran en [UNet++ y procesador de análisis](docs/UNET_GPU.md). La opción GPU necesita el worker CUDA optativo y una GPU accesible desde Docker.
 
 El benchmark sobre 260 × 260 m de Minas utiliza GeoTIFF oficial en EPSG:5382, remuestreado de 5 a 20 cm. Procesó 1300 × 1300 píxeles en aproximadamente 9 s de inferencia CPU y generó 74 polígonos antes de intersecar con parcelas. Estos números son resultados de ejecución, **no una evaluación de precisión**.
 
@@ -81,9 +62,9 @@ npm --prefix frontend run build
 
 Los tests backend crean y eliminan una base PostGIS aleatoria aislada. Incluyen CSRF, 2FA, bloqueo, replay, roles, revocación, importación, duplicados, intersecciones exactas, CRS, cobertura, filtros, revisión concurrente, exportación segura, cuotas y versionado.
 
-End-to-end: `scripts/qa_server.py` crea una base, bucket, cola y cuenta de fixture temporales, carga una muestra oficial y levanta un worker Docker. Iniciar Vite en frontend (`$env:VITE_PROXY_TARGET="http://127.0.0.1:5051"; npm run dev`, proxy exclusivo de QA) y ejecutar `npm run test:e2e` con Edge/Chromium. Detener el servidor al finalizar; si una interrupción del sistema impide su finally, `scripts/qa_cleanup.py NOMBRE_EXACTO_BASE_QA` limpia únicamente recursos con formato y manifiesto de propiedad verificados. No usar fixtures como evidencia administrativa.
+End-to-end: `scripts/qa_server.py` crea una base, bucket, cola y cuenta de fixture temporales, carga una muestra oficial y levanta un worker Docker. Iniciar Vite en frontend (`$env:VITE_PROXY_TARGET="http://127.0.0.1:5051"; npm run dev`, proxy exclusivo de QA) y ejecutar `npm run test:e2e` con Microsoft Edge; para usar Chromium hay que ajustar el canal en la configuración de Playwright. Detener el servidor al finalizar; si una interrupción del sistema impide su finally, `scripts/qa_cleanup.py NOMBRE_EXACTO_BASE_QA` limpia únicamente recursos con formato y manifiesto de propiedad verificados. No usar fixtures como evidencia administrativa.
 
-La suite actual contiene 86 pruebas backend, 10 frontend y tres pruebas de aceptación Playwright. Incluye selección múltiple, filtros, orden y exportación de resultados históricos. La comprobación de dependencias documentada no detectó vulnerabilidades conocidas; no sustituye el mantenimiento continuo.
+La suite cubre selección múltiple, comparación catastral y gestión de análisis, revisiones y resultados. La comprobación de dependencias documentada no sustituye el mantenimiento continuo.
 
 Reportes, máscaras, GeoJSON, benchmark y capturas se guardan en artifacts/, excluido de Git. [Verificación ejecutada](docs/validation/VERIFIED_RUN.json), [informe del modelo](docs/validation/MODEL_REPORT.md), [estado por misión](docs/missions/STATUS.md), [plan](docs/missions/PLAN.md), [OpenAPI](docs/api/openapi.json).
 
@@ -97,8 +78,6 @@ Reportes, máscaras, GeoJSON, benchmark y capturas se guardan en artifacts/, exc
 - Pendientes: etiquetado independiente de al menos 200 padrones; evaluación de otras ortofotos/localidades; completar vínculo normativo de categorías; ensayo de carga y validación de la infraestructura productiva. Ver el estado detallado, sin marcar esos puntos como terminados.
 
 Guías: [usuario](docs/USER_GUIDE.md), [Docker](docs/deployment/DOCKER.md), [Coolify](docs/deployment/COOLIFY.md), [backup/restauración](docs/deployment/BACKUP_RESTORE.md), [procedencia y licencias](docs/data-sources/PROVENANCE.md).
-
-No se leyó ni copió el .env del backend de referencia. Sus responsables deben revisar y rotar credenciales posiblemente expuestas. No se hizo push ni publicación externa.
 
 ## Problemas frecuentes
 

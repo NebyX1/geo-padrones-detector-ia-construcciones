@@ -16,6 +16,6 @@ export function AuthProvider({children}: {children: ReactNode}) {
 export function useAuth() { const ctx = useContext(AuthContext); if (!ctx) throw new Error('AuthProvider ausente'); return ctx }
 // eslint-disable-next-line react-refresh/only-export-components
 export function can(role: string, permission: string) {
-  const caps: Record<string, string[]> = {superadmin: ['analyze','import','export','review','users','settings'], admin: ['analyze','import','export','review','users'], analyst: ['analyze','import','export'], reviewer: ['review'], viewer: []}
+  const caps: Record<string, string[]> = {superadmin: ['analyze','import','export','review','users','settings','purge'], admin: ['analyze','import','export','review','users','purge'], analyst: ['analyze','import','export'], reviewer: ['review'], viewer: []}
   return caps[role]?.includes(permission) || false
 }

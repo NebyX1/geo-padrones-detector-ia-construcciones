@@ -10,6 +10,7 @@ const links = [
   {to: '/dashboard', name: 'Dashboard', icon: LayoutDashboard},
   {to: '/explorer', name: 'Explorador catastral', icon: Map},
   {to: '/multi-selection', name: 'Selección múltiple', icon: Square},
+  {to: '/compare', name: 'Comparar', icon: GitCompareArrows},
   {to: '/analysis', name: 'Análisis con IA', icon: ScanLine, permission: 'analyze'},
   {to: '/comparisons', name: 'Comparar declaraciones', icon: GitCompareArrows},
   {to: '/imports', name: 'Importaciones CSV', icon: Upload, permission: 'import'},

@@ -54,6 +54,21 @@ def analyze(job):
         raise ValueError("El modelo fue deshabilitado.")
     model = None
     params = run.parameters
+    architecture = (
+        "unetpp_efficientnet_b4"
+        if model_version.model_id == "giswqs/whu-building-unetplusplus-efficientnet-b4"
+        else "flair"
+    )
+    device = params.get("device", current_app.config["MODEL_DEVICE"])
+    if device not in {"cpu", "cuda"}:
+        raise ValueError("Dispositivo de procesamiento inválido.")
+    if device == "cuda":
+        import torch
+
+        if not torch.cuda.is_available():
+            raise ValueError(
+                "GPU NVIDIA no disponible en el procesador de análisis. Configure CUDA o seleccione CPU."
+            )
     for index, parcel_id in enumerate(job.payload["parcel_ids"], start=1):
         progress(job.id)
         existing = db.session.execute(
@@ -73,6 +88,8 @@ def analyze(job):
             state="ERROR_ANALISIS",
             coverage=0,
         )
+        loading_model = False
+        running_inference = False
         try:
             if parcel.source_version_id != expected_version:
                 raise ValueError(
@@ -87,14 +104,19 @@ def analyze(job):
             raw, asset = download_crop(scene, bounds)
             rgb, valid, affine, crs = read_rgb(raw)
             if model is None:
+                loading_model = True
                 model = load_model(
                     str(current_app.config["MODEL_DIR"] / model_version.filename),
                     model_version.sha256,
-                    current_app.config["MODEL_DEVICE"],
+                    device,
+                    architecture,
                 )
+                loading_model = False
+            running_inference = True
             probabilities = segment(
-                rgb, model, current_app.config["MODEL_DEVICE"], callback=lambda: progress(job.id)
+                rgb, model, device, callback=lambda: progress(job.id), architecture=architecture
             )
+            running_inference = False
             buildings, coverage, binary = vectorize(
                 probabilities, valid, affine, params["probability"], params.get("min_object_area", 2)
             )
@@ -154,6 +176,14 @@ def analyze(job):
             raise
         except Exception as exc:
             db.session.rollback()
+            if loading_model:
+                raise ValueError(
+                    "No se pudo cargar el modelo en el dispositivo elegido; revise su instalación y memoria."
+                ) from exc
+            if running_inference:
+                raise ValueError(
+                    "No se pudo ejecutar el modelo en el dispositivo elegido; revise su disponibilidad y memoria."
+                ) from exc
             # Expose safe operational categories only; not SQL, object keys, passwords or URLs with credentials.
             message = str(exc) if isinstance(exc, ValueError) else type(exc).__name__
             state = (

@@ -1,0 +1,15 @@
+# Optional NVIDIA GPU worker. Requires an operational Docker Engine and GPU runtime.
+services:
+  worker:
+    image: geopadrones-worker:cuda
+    build:
+      context: .
+      dockerfile: worker/Dockerfile.gpu
+    deploy:
+      replicas: 1
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

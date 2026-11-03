@@ -10,6 +10,7 @@ def failed(rq_job, connection, exc_type, exc_value, traceback):
         job = db.session.get(Job, rq_job.id)
         if job and job.status not in {"COMPLETED", "CANCELLED"}:
             job.status = "FAILED"
-            job.error = f"Worker: {getattr(exc_type, '__name__', 'error')}"
+            if not job.error:
+                job.error = f"Worker: {getattr(exc_type, '__name__', 'error')}"
             job.finished_at = utcnow()
             db.session.commit()

@@ -70,6 +70,7 @@ def create_selection():
         "name",
         "scene_id",
         "model_version_id",
+        "device",
         "probability",
         "min_area",
         "min_object_area",

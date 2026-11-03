@@ -109,6 +109,9 @@ def attachments(identifier):
 
 
 def upload_attachment(identifier):
+    case = db.session.scalar(select(ReviewCase).where(ReviewCase.id == identifier).with_for_update())
+    if not case:
+        abort(404)
     file = request.files.get("file")
     if not file or request.form.get("authorized") != "true":
         abort(422, "Seleccione un archivo y confirme que dispone de autorización para adjuntarlo.")

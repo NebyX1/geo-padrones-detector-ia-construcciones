@@ -161,6 +161,8 @@ def create_app(config_name=None, overrides=None):
     from .routes.reviews import bp as review_evidence
     from .routes.analytics import bp as analytics
     from .routes.bulk_analysis import bp as bulk_analysis
+    from .routes.analysis_cleanup import bp as analysis_cleanup
+    from .routes.cadastre_compare import bp as cadastre_compare
     from .cli import register_commands
 
     for blueprint in (
@@ -173,6 +175,8 @@ def create_app(config_name=None, overrides=None):
         review_evidence,
         analytics,
         bulk_analysis,
+        analysis_cleanup,
+        cadastre_compare,
     ):
         app.register_blueprint(blueprint, url_prefix="/api/v1")
     register_commands(app)

@@ -19,7 +19,7 @@ def normalize(rgb):
 
 
 @lru_cache(maxsize=2)
-def load_model(filename, expected_sha256, device="cpu"):
+def load_model(filename, expected_sha256, device="cpu", architecture="flair"):
     import torch
     import segmentation_models_pytorch as smp
 
@@ -33,6 +33,15 @@ def load_model(filename, expected_sha256, device="cpu"):
     # weights_only forbids unpickling arbitrary Python objects from downloaded checkpoints.
     checkpoint = torch.load(path, map_location="cpu", weights_only=True)
     state = checkpoint.get("state_dict", checkpoint)
+    if architecture == "unetpp_efficientnet_b4":
+        model = smp.UnetPlusPlus(
+            encoder_name="efficientnet-b4", encoder_weights=None, in_channels=3, classes=2, activation=None
+        )
+        model.load_state_dict(state, strict=True)
+        model.eval().to(device)
+        return model
+    if architecture != "flair":
+        raise ValueError("Arquitectura de modelo no admitida.")
     # Published checkpoint may include a Lightning wrapper prefix.
     if any(k.startswith("model.seg_model.") for k in state):
         unexpected = [k for k in state if not k.startswith("model.seg_model.") and k != "criterion.weight"]
@@ -55,14 +64,22 @@ def load_model(filename, expected_sha256, device="cpu"):
     return model
 
 
-def segment(rgb, model, device="cpu", window=512, overlap=128, callback=None):
+def segment(rgb, model, device="cpu", window=512, overlap=128, callback=None, architecture="flair"):
     import torch
 
     if not 0 <= overlap < window or window % 32:
         raise ValueError("Ventana/solapamiento inválidos.")
     _, height, width = rgb.shape
     padded_h, padded_w = max(window, height), max(window, width)
-    data = np.pad(normalize(rgb), ((0, 0), (0, padded_h - height), (0, padded_w - width)), mode="edge")
+    if architecture == "flair":
+        image = normalize(rgb)
+    elif architecture == "unetpp_efficientnet_b4":
+        if rgb.ndim != 3 or rgb.shape[0] != 3:
+            raise ValueError("Se requieren tres canales RGB en orden CHW.")
+        image = rgb.astype(np.float32) / 255.0
+    else:
+        raise ValueError("Arquitectura de modelo no admitida.")
+    data = np.pad(image, ((0, 0), (0, padded_h - height), (0, padded_w - width)), mode="edge")
     stride = window - overlap
     ys = list(range(0, padded_h - window + 1, stride))
     xs = list(range(0, padded_w - window + 1, stride))
@@ -80,11 +97,16 @@ def segment(rgb, model, device="cpu", window=512, overlap=128, callback=None):
                 callback()
             with torch.inference_mode():
                 output = model(torch.from_numpy(data[:, y : y + window, x : x + window][None]).to(device))
-                if output.shape[1] != 19:
-                    raise ValueError("El checkpoint no devuelve los diecinueve canales verificados.")
+                expected_channels = 19 if architecture == "flair" else 2
+                if output.shape[1] != expected_channels:
+                    raise ValueError("La salida del modelo no coincide con sus clases verificadas.")
                 probs = torch.softmax(output, dim=1)[0]
-                # Building is training label 1, zero-based output channel 0.
-                building = (probs[0] * (probs.argmax(dim=0) == 0)).cpu().numpy()
+                # FLAIR uses channel 0 for buildings; the binary UNet++ uses channel 1.
+                building = (
+                    (probs[0] * (probs.argmax(dim=0) == 0) if architecture == "flair" else probs[1])
+                    .cpu()
+                    .numpy()
+                )
             probability[y : y + window, x : x + window] += building * weight
             total_weight[y : y + window, x : x + window] += weight
     return (probability / total_weight)[:height, :width]

@@ -38,7 +38,28 @@ docker compose exec backend flask register-imagery
 docker compose exec backend flask init-bucket
 ```
 
-El directorio `data/models` se monta de solo lectura. Para descargar en el servidor, ejecutar el script una sola vez sobre ese directorio persistente antes de iniciar nuevos workers. Nunca se descarga en cada arranque. GPU es opcional a nivel de la clase de inferencia, pero la imagen suministrada y validada usa CPU; una imagen CUDA y drivers necesitan validación separada.
+El directorio `data/models` se monta de solo lectura. Para descargar en el servidor, ejecutar el script una sola vez sobre ese directorio persistente antes de iniciar nuevos workers. Nunca se descarga en cada arranque. La imagen estándar suministrada y validada usa CPU.
+
+## Worker opcional con GPU NVIDIA
+
+Existe una imagen opcional separada con PyTorch CUDA 12.4 en `worker/Dockerfile.gpu` y una configuración en `docker-compose.gpu.yml`. El 2 de noviembre de 2026 se comprobó en esta máquina que un contenedor temporal sin red, con usuario sin privilegios, accede a la RTX 3050 y ejecuta UNet++ sobre una ortofoto real. Tras recuperar Redis, también se verificó el análisis completo mediante una cola y una base de pruebas aisladas.
+
+Con Docker Desktop usando WSL 2, un controlador NVIDIA compatible y el acceso a GPU confirmado, construir e iniciar únicamente el worker de este proyecto:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.gpu.yml build worker
+docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.gpu.yml up -d --no-deps worker
+```
+
+El archivo opcional reserva una GPU NVIDIA y una réplica de worker. La imagen incluye CUDA y también puede ejecutar trabajo en CPU; elegir GPU requiere que la aplicación y el dispositivo estén configurados para ello. Los archivos de pesos ocupan disco, mientras que la memoria de GPU utilizada durante la inferencia debe medirse: no son cantidades equivalentes.
+
+Para volver al worker estándar de CPU, cuando no haya trabajos en curso:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --no-deps --build worker
+```
+
+Cambiar de imagen recrea el worker. Espere a que termine cualquier trabajo en curso para evitar interrumpirlo. No se deben eliminar los volúmenes para cambiar de dispositivo.
 
 ## Migraciones y salud
 

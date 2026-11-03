@@ -358,3 +358,11 @@ class SystemSetting(db.Model):
     __tablename__ = "system_settings"
     key = db.Column(db.String(80), primary_key=True)
     value = db.Column(db.JSON, nullable=False)
+
+
+class CleanupEntry(Base):
+    __tablename__ = "cleanup_entries"
+    kind = db.Column(db.String(12), nullable=False)
+    key = db.Column(db.Text, nullable=False)
+    attempts = db.Column(db.Integer, nullable=False, default=0)
+    __table_args__ = (db.UniqueConstraint("kind", "key"),)

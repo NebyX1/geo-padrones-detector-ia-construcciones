@@ -93,10 +93,29 @@ def create_analysis():
 @require("read")
 def jobs():
     limit, offset = pagination()
-    query = select(Job).order_by(Job.created_at.desc()).limit(limit).offset(offset)
-    if request.args.get("kind"):
-        query = query.where(Job.kind == request.args["kind"])
-    return jsonify(items=[j.public() for j in db.session.execute(query).scalars()])
+    from ..repositories.worklists import job_query, count
+
+    query = job_query(request.args)
+    total = count(query)
+    records = db.session.execute(
+        query.add_columns(AnalysisRun, AIModelVersion.model_id)
+        .order_by(Job.created_at.desc(), Job.id)
+        .limit(limit)
+        .offset(offset)
+    ).all()
+    return jsonify(
+        items=[
+            {
+                **job.public(),
+                "model_id": model,
+                "model_version_id": run.model_version_id if run else None,
+                "device": run.parameters.get("device", "cpu") if run else None,
+            }
+            for job, run, model in records
+        ],
+        total=total,
+        next_offset=offset + limit if offset + len(records) < total else None,
+    )
 
 
 @bp.get("/analysis/jobs/<identifier>")
@@ -446,15 +465,13 @@ def comparison_results(identifier):
 @require("read")
 def reviews():
     limit, offset = pagination()
-    query = (
-        select(ReviewCase, ParcelAnalysisResult, Parcel)
-        .join(ParcelAnalysisResult, ParcelAnalysisResult.id == ReviewCase.result_id)
-        .join(Parcel, Parcel.id == ParcelAnalysisResult.parcel_id)
-    )
-    if request.args.get("status"):
-        query = query.where(ReviewCase.status == request.args["status"])
-    if request.args.get("needs_reanalysis") == "true":
-        query = query.where(ReviewCase.needs_reanalysis.is_(True))
+    from ..repositories.worklists import review_query, count
+
+    query = review_query(request.args)
+    total = count(query)
+    rows = db.session.execute(
+        query.order_by(ReviewCase.created_at.desc(), ReviewCase.id).limit(limit).offset(offset)
+    ).all()
     return jsonify(
         items=[
             dict(
@@ -467,11 +484,16 @@ def reviews():
                 state=r.state,
                 m2_huella_detectada=r.m2_huella_detectada,
                 needs_reanalysis=c.needs_reanalysis,
+                locality=locality,
+                codloccat=p.codloccat,
+                model_id=model,
+                created_at=r.created_at,
+                device=params.get("device", "cpu"),
             )
-            for c, r, p in db.session.execute(
-                query.order_by(ReviewCase.created_at.desc()).limit(limit).offset(offset)
-            )
-        ]
+            for c, r, p, locality, model, params in rows
+        ],
+        total=total,
+        next_offset=offset + limit if offset + len(rows) < total else None,
     )
 
 

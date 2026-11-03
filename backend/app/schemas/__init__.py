@@ -34,6 +34,7 @@ class AnalysisSchema(StrictSchema):
     parcel_ids = fields.List(fields.UUID(), required=True, validate=validate.Length(min=1, max=100))
     scene_id = fields.UUID(required=True)
     model_version_id = fields.UUID(required=True)
+    device = fields.String(load_default="cpu", validate=validate.OneOf(["cpu", "cuda"]))
     probability = fields.Float(load_default=0.5, validate=validate.Range(min=0.1, max=0.99))
     min_area = fields.Float(load_default=8, validate=validate.Range(min=0, max=1000))
     min_object_area = fields.Float(load_default=2, validate=validate.Range(min=0, max=1000))

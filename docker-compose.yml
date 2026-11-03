@@ -9,10 +9,11 @@ x-app: &app
     MINIO_ENDPOINT: minio:9000
     DATA_DIR: /data/runtime
     MODEL_DIR: /data/models
+    CATASTRE_GEOJSON: /data/catastro/padrones_lavalleja.geojson
     MAIL_SERVER: ${MAIL_SERVER:-mailpit}
     TRUST_PROXY: 'true'
   networks: [internal, outbound]
-  volumes: [runtime:/data/runtime, './data/models:/data/models:ro']
+  volumes: [runtime:/data/runtime, './data/models:/data/models:ro', './data/catastro/lavalleja_procesado:/data/catastro:ro']
   restart: unless-stopped
   logging:
     driver: json-file

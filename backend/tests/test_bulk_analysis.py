@@ -247,3 +247,26 @@ def test_no_coverage_is_indeterminate_without_loading_model(client, monkeypatch)
     assert len(rows) == 2 and all(
         row["state"] == "INDETERMINADO" and row["m2_huella_detectada"] is None for row in rows
     )
+
+
+def test_unavailable_gpu_fails_job_before_touching_parcel_results(client, monkeypatch):
+    import torch
+
+    login(client, "analyst")
+    monkeypatch.setattr("app.routes.bulk_analysis.dispatch", lambda job: None)
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+    parcels, bounds = seed_many(2)
+    scene, model = resources(bounds)
+    response = post(
+        client,
+        "/bulk-selections",
+        {"bounds": bounds, "scene_id": scene.id, "model_version_id": model.id, "device": "cuda"},
+    )
+    assert response.status_code == 202
+    batch = response.json["batch"]
+    assert batch["parameters"]["device"] == "cuda"
+    job = db.session.scalar(select(Job))
+    with pytest.raises(ValueError, match="GPU NVIDIA no disponible"):
+        analyze(job)
+    assert db.session.scalar(select(ParcelAnalysisResult)) is None
+    assert all(parcel.current_result_id is None for parcel in parcels)

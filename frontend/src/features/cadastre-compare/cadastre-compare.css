@@ -1,0 +1,43 @@
+.cadastre-compare-page{background:var(--bg);color:var(--text)}
+[data-theme=dark] .workspace:has(.cadastre-compare-page),[data-theme=dark] .app-body:has(.cadastre-compare-page){background:var(--bg)}
+.cadastre-compare-layout{display:grid;grid-template-columns:minmax(250px,310px) minmax(0,1fr);gap:20px;align-items:start}
+.cadastre-history{display:flex;align-items:end;gap:15px;margin-bottom:18px}.cadastre-history label{width:min(420px,100%);font-size:11px}.cadastre-history select{margin-top:6px;font-size:11px}
+.cadastre-filter-panel{padding:24px;overflow:visible}
+.cadastre-filter-panel h2{margin:8px 0 10px;font-size:24px}
+.cadastre-filter-panel>p{font-size:11px;line-height:1.6;color:var(--muted);margin-bottom:18px}
+.cadastre-filter-panel label{display:block;font-size:11px;margin:15px 0}
+.cadastre-filter-panel label select{margin-top:6px;font-size:11px}
+.cadastre-range{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cadastre-range input{margin-top:6px;font-size:11px;width:100%}
+.cadastre-preview{margin:20px 0;padding:16px;border-radius:9px;background:var(--bg);border:1px solid var(--border)}
+.cadastre-preview>strong{display:block;font-size:25px;color:var(--navy)}
+.cadastre-preview>strong small{display:block;font-size:10px;font-weight:400;color:var(--muted);margin-top:4px}
+.cadastre-preview p{font-size:10px;line-height:1.6;margin:9px 0 0}
+.cadastre-model{border-top:1px solid var(--border);padding-top:5px}
+.cadastre-model small{display:block;color:var(--muted);line-height:1.5;margin-top:6px}
+.cadastre-legend{border-top:1px solid var(--border);margin-top:24px;padding-top:20px}
+.cadastre-legend>div{display:flex;align-items:center;gap:9px;font-size:10px;color:var(--muted);margin-top:12px}
+.cadastre-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;flex:none}
+.cadastre-compare-main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.cadastre-run-progress{padding:20px 24px;display:flex;align-items:center;gap:24px}
+.cadastre-run-progress>div:first-child{flex:1}
+.cadastre-run-progress h2{font-size:20px;margin:6px 0}
+.cadastre-run-progress p{font-size:11px;color:var(--muted)}
+.cadastre-progress-value{width:160px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.cadastre-progress-value strong{font-size:11px}.cadastre-progress-value progress{grid-column:1/-1}
+.cadastre-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.cadastre-summary-card{position:relative;padding:15px;text-align:left;min-height:84px;color:var(--text);cursor:pointer}
+.cadastre-summary-card span{font-size:10px;color:var(--muted);display:block;line-height:1.3}
+.cadastre-summary-card strong{font-size:23px;display:block;margin-top:9px;font-weight:500}
+.cadastre-summary-card i{position:absolute;right:14px;bottom:18px;width:9px;height:9px;border-radius:50%}
+.cadastre-summary-card.selected{border-color:var(--teal);box-shadow:0 0 0 2px var(--soft-teal)}
+.cadastre-map-section .surface-heading p{font-size:11px;margin-top:6px}
+.cadastre-map{height:570px;position:relative;isolation:isolate}
+.cadastre-map .leaflet-container{height:100%;width:100%;background:#e7ede8}
+.cadastre-map .leaflet-bottom.leaflet-left{bottom:42px}
+.cadastre-map-caption{position:absolute;left:12px;bottom:12px;z-index:500;max-width:calc(100% - 24px);padding:9px 12px;border-radius:6px;background:var(--surface);color:var(--text);box-shadow:var(--shadow);font-size:10px;line-height:1.4}
+.cadastre-detail{padding:20px 24px}.cadastre-detail>div:first-child{display:flex;gap:10px;align-items:flex-start}.cadastre-detail svg{color:var(--teal)}
+.cadastre-detail h2{font-size:19px;margin:4px 0}.cadastre-detail p{font-size:11px;color:var(--muted)}
+.cadastre-detail dl{display:flex;flex-wrap:wrap;gap:20px;margin:18px 0 0}.cadastre-detail dt{font-size:10px;color:var(--muted);margin-bottom:5px}.cadastre-detail dd{font-size:12px;font-weight:600}
+.cadastre-detail .cadastre-reference-warning{background:#fff3d4;color:#704d08;padding:11px;border-radius:6px;margin-top:14px;font-size:11px}
+@media(max-width:1050px){.cadastre-summary{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.cadastre-compare-layout{grid-template-columns:1fr}.cadastre-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.cadastre-map{height:440px}.cadastre-run-progress{flex-wrap:wrap}.cadastre-progress-value{width:100%}}

@@ -5,8 +5,8 @@ from ..extensions import db
 from ..models import AuditLog
 
 CAPABILITIES = {
-    "superadmin": {"read", "analyze", "import", "export", "review", "users", "settings"},
-    "admin": {"read", "analyze", "import", "export", "review", "users"},
+    "superadmin": {"read", "analyze", "import", "export", "review", "users", "settings", "purge"},
+    "admin": {"read", "analyze", "import", "export", "review", "users", "purge"},
     "analyst": {"read", "analyze", "import", "export"},
     "reviewer": {"read", "review"},
     "viewer": {"read"},

@@ -118,6 +118,25 @@ class ObjectStorage:
             response.close()
             response.release_conn()
 
+    def delete(self, key):
+        key = safe_key(key)
+        if self.local:
+            (self.root / key).unlink(missing_ok=True)
+            return
+        with db.engine.connect() as connection:
+            lock_name = "storage-quota:" + self.bucket
+            connection.execute(db.text("SET LOCAL statement_timeout='15s'"))
+            connection.execute(db.text("SELECT pg_advisory_lock(hashtext(:name))"), {"name": lock_name})
+            try:
+                counter = Redis.from_url(self.config["REDIS_URL"], socket_connect_timeout=2, socket_timeout=3)
+                try:
+                    counter.delete("geopadrones:storage-usage:" + self.bucket)
+                    self.client.remove_object(self.bucket, key)
+                finally:
+                    counter.close()
+            finally:
+                connection.execute(db.text("SELECT pg_advisory_unlock(hashtext(:name))"), {"name": lock_name})
+
 
 def storage():
     return ObjectStorage()
